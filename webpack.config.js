@@ -12,7 +12,8 @@ module.exports = (env = {}) => {
             filename: mode === "development" ? "crud.js" : "crud.min.js"
         },
         externals: {
-            "jquery": "jQuery"
+            "jquery": "jQuery",
+            "lodash": "_"
         }
     }
 
