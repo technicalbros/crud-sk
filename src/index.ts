@@ -55,7 +55,7 @@ export class CrudRequest {
                 ...options,
             }
 
-            const {data, callbacks, method, baseUrl, url, redirectTo, showProgress, prefix} = config;
+            const {data, callbacks, method, baseUrl, url, redirectTo, showProgress, prefix = ""} = config;
             const reloadPage = config.reload;
             const {loading, reload, redirect, checkSuccess, notify} = callbacks;
 
@@ -95,7 +95,12 @@ export class CrudRequest {
 
             ajaxOptions.type = method;
             ajaxOptions.url = baseUrl + prefix + url;
-            ajaxOptions.data = data;
+
+            if (data instanceof FormData) {
+                ajaxOptions.type = "post";
+            } else {
+                ajaxOptions.data = data;
+            }
 
             showProgress && loading && loading(true);
 

@@ -35,7 +35,7 @@ var CrudRequest = /** @class */ (function () {
         var _this = this;
         return new Promise(function (resolve, reject) {
             var config = __assign({}, _this.$config, options);
-            var data = config.data, callbacks = config.callbacks, method = config.method, baseUrl = config.baseUrl, url = config.url, redirectTo = config.redirectTo, showProgress = config.showProgress, prefix = config.prefix;
+            var data = config.data, callbacks = config.callbacks, method = config.method, baseUrl = config.baseUrl, url = config.url, redirectTo = config.redirectTo, showProgress = config.showProgress, _a = config.prefix, prefix = _a === void 0 ? "" : _a;
             var reloadPage = config.reload;
             var loading = callbacks.loading, reload = callbacks.reload, redirect = callbacks.redirect, checkSuccess = callbacks.checkSuccess, notify = callbacks.notify;
             var ajaxOptions = __assign({}, config.ajaxOptions, { success: function (response) {
@@ -69,7 +69,12 @@ var CrudRequest = /** @class */ (function () {
                 } });
             ajaxOptions.type = method;
             ajaxOptions.url = baseUrl + prefix + url;
-            ajaxOptions.data = data;
+            if (data instanceof FormData) {
+                ajaxOptions.type = "post";
+            }
+            else {
+                ajaxOptions.data = data;
+            }
             showProgress && loading && loading(true);
             jquery_1.ajax(ajaxOptions);
         });
