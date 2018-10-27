@@ -104,3 +104,4 @@ var CrudRequest = /** @class */ (function () {
     return CrudRequest;
 }());
 exports.CrudRequest = CrudRequest;
+window.CrudRequest = CrudRequest;

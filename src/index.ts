@@ -163,3 +163,12 @@ export class CrudRequest {
         this.$config.callbacks.notify(options);
     }
 }
+
+
+declare  global {
+    interface Window {
+        CrudRequest: typeof CrudRequest;
+    }
+}
+
+window.CrudRequest = CrudRequest;

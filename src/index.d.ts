@@ -39,3 +39,8 @@ export declare class CrudRequest {
     dialog(name: string, options: any): Promise<any>;
     notify(options: any): void;
 }
+declare global {
+    interface Window {
+        CrudRequest: typeof CrudRequest;
+    }
+}
