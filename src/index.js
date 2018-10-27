@@ -10,8 +10,34 @@ var __assign = (this && this.__assign) || function () {
     };
     return __assign.apply(this, arguments);
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-var jquery_1 = require("jquery");
+var jquery_1 = __importDefault(require("jquery"));
+var _ = __importStar(require("lodash"));
+var mergeData = function (formData, data, key) {
+    if (_.isObject(data) && !(data instanceof File) && !(data instanceof Blob)) {
+        _.each(data, function (value, _key) {
+            var name = key ? key + "[" + _key + "]" : _key;
+            mergeData(formData, value, name);
+        });
+    }
+    else if (key) {
+        formData.append(key, data);
+    }
+};
+FormData.prototype.merge = function (data) {
+    mergeData(this, data);
+    return this;
+};
 var CrudRequest = /** @class */ (function () {
     function CrudRequest() {
         this.$config = {
@@ -34,8 +60,8 @@ var CrudRequest = /** @class */ (function () {
     CrudRequest.prototype.send = function (options) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            var config = __assign({}, _this.$config, options);
-            var data = config.data, callbacks = config.callbacks, method = config.method, baseUrl = config.baseUrl, url = config.url, redirectTo = config.redirectTo, showProgress = config.showProgress, _a = config.prefix, prefix = _a === void 0 ? "" : _a;
+            var config = __assign({ checkDataType: true, notify: true }, _this.$config, options);
+            var data = config.data, callbacks = config.callbacks, method = config.method, baseUrl = config.baseUrl, url = config.url, redirectTo = config.redirectTo, showProgress = config.showProgress, _a = config.prefix, prefix = _a === void 0 ? "" : _a, checkDataType = config.checkDataType;
             var reloadPage = config.reload;
             var loading = callbacks.loading, reload = callbacks.reload, redirect = callbacks.redirect, checkSuccess = callbacks.checkSuccess, notify = callbacks.notify;
             var ajaxOptions = __assign({}, config.ajaxOptions, { success: function (response) {
@@ -44,10 +70,13 @@ var CrudRequest = /** @class */ (function () {
                         resolve(response);
                     }
                     else if (checkSuccess) {
-                        if (checkSuccess(response)) {
+                        if (checkDataType && checkSuccess(response)) {
                             resolve(response);
                             // @ts-ignore
                             (redirectTo && redirect && redirect(redirectTo, response)) || (reloadPage && reload && reload());
+                        }
+                        else if (!checkDataType) {
+                            resolve(response);
                         }
                         else {
                             reject(response);
@@ -69,14 +98,21 @@ var CrudRequest = /** @class */ (function () {
                 } });
             ajaxOptions.type = method;
             ajaxOptions.url = baseUrl + prefix + url;
-            if (data instanceof FormData) {
-                ajaxOptions.type = "post";
+            if (method.toLowerCase() === 'post') {
+                var formData = new FormData().merge(data);
+                ajaxOptions.data = formData;
             }
             else {
                 ajaxOptions.data = data;
             }
+            if (ajaxOptions.data instanceof FormData) {
+                ajaxOptions.type = "post";
+                ajaxOptions.cache = false;
+                ajaxOptions.processData = false;
+                ajaxOptions.contentType = false;
+            }
             showProgress && loading && loading(true);
-            jquery_1.ajax(ajaxOptions);
+            jquery_1.default.ajax(ajaxOptions);
         });
     };
     CrudRequest.prototype.create = function (url, data, options) {
@@ -89,7 +125,7 @@ var CrudRequest = /** @class */ (function () {
         return this.send(__assign({ method: "post", prefix: "delete/" }, options, { url: url, data: data }));
     };
     CrudRequest.prototype.retrieve = function (url, data, options) {
-        return this.send(__assign({ method: "get", prefix: "retrieve/" }, options, { url: url, data: data }));
+        return this.send(__assign({ method: "get", prefix: "retrieve/", checkDataType: false, notify: false }, options, { url: url, data: data }));
     };
     CrudRequest.prototype.alert = function (options) {
         return this.$config.callbacks.alert(options);
@@ -105,6 +141,37 @@ var CrudRequest = /** @class */ (function () {
     };
     CrudRequest.prototype.notify = function (options) {
         this.$config.callbacks.notify(options);
+    };
+    CrudRequest.prototype.chooseFile = function (options) {
+        if (options === void 0) { options = {}; }
+        var multiple = options.multiple, accept = options.accept;
+        var input = document.querySelector('.sk-file-input');
+        if (!input) {
+            input = document.createElement('input');
+            input.type = "file";
+            input.accept = _.isArray(accept) ? accept.join(",") : accept;
+            input.multiple = multiple;
+            input.style.display = "none";
+            input.className = "sk-file-input";
+            document.querySelector("body").appendChild(input);
+        }
+        jquery_1.default('input').click();
+        return new Promise(function (resolve) {
+            jquery_1.default(input).one('change', function (e) {
+                var files = e.currentTarget.files;
+                var filesArray = [];
+                _.each(files, function (file) {
+                    file.url = URL.createObjectURL(file);
+                    filesArray.push(file);
+                });
+                if (multiple) {
+                    resolve(filesArray);
+                }
+                else {
+                    resolve(files[0]);
+                }
+            });
+        });
     };
     return CrudRequest;
 }());

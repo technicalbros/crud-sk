@@ -26,6 +26,18 @@ export interface RequestOptions extends DefaultRequestOptions {
     method?: "post" | "get" | "put" | "delete" | string;
     ajaxOptions?: AjaxSettings;
 }
+export interface ChooseFileOptions {
+    accept?: string | string[];
+    multiple?: boolean;
+}
+declare global {
+    interface FormData {
+        merge(data: any): this;
+    }
+    interface File {
+        url: string;
+    }
+}
 export declare class CrudRequest {
     $config: DefaultRequestOptions;
     send(options: RequestOptions): Promise<any>;
@@ -38,6 +50,7 @@ export declare class CrudRequest {
     prompt(options: any): Promise<any>;
     dialog(name: string, options: any): Promise<any>;
     notify(options: any): void;
+    chooseFile(options?: ChooseFileOptions): Promise<File | File[]>;
 }
 declare global {
     interface Window {

@@ -1,4 +1,5 @@
-import {ajax} from "jquery";
+import $ from "jquery";
+import * as _ from "lodash";
 import AjaxSettings = JQuery.AjaxSettings;
 
 export interface DefaultRequestOptions {
@@ -30,6 +31,39 @@ export interface RequestOptions extends DefaultRequestOptions {
     ajaxOptions?: AjaxSettings
 }
 
+export interface ChooseFileOptions {
+    accept?: string | string[],
+    multiple?: boolean
+}
+
+declare global {
+    interface FormData {
+        merge(data: any): this
+    }
+
+    interface File {
+        url: string
+    }
+}
+
+var mergeData = (formData: FormData, data: any, key?: string) => {
+
+    if (_.isObject(data) && !(data instanceof File) && !(data instanceof Blob)) {
+        _.each(data, (value, _key) => {
+            const name = key ? `${key}[${_key}]` : _key;
+            mergeData(formData, value, name);
+        })
+    } else if (key) {
+        formData.append(key, data);
+    }
+
+}
+
+FormData.prototype.merge = function (data: Object) {
+    mergeData(this, data);
+    return this;
+};
+
 export class CrudRequest {
 
     $config: DefaultRequestOptions = {
@@ -51,11 +85,13 @@ export class CrudRequest {
     send(options: RequestOptions): Promise<any> {
         return new Promise((resolve, reject) => {
             const config = {
+                checkDataType: true,
+                notify: true,
                 ...this.$config,
                 ...options,
             }
 
-            const {data, callbacks, method, baseUrl, url, redirectTo, showProgress, prefix = ""} = config;
+            const {data, callbacks, method, baseUrl, url, redirectTo, showProgress, prefix = "", checkDataType} = config;
             const reloadPage = config.reload;
             const {loading, reload, redirect, checkSuccess, notify} = callbacks;
 
@@ -66,12 +102,12 @@ export class CrudRequest {
                     if (method.toLowerCase() === 'get' || !checkSuccess) {
                         resolve(response);
                     } else if (checkSuccess) {
-                        if (checkSuccess(response)) {
-
+                        if (checkDataType && checkSuccess(response)) {
                             resolve(response);
                             // @ts-ignore
                             (redirectTo && redirect && redirect(redirectTo, response)) || (reloadPage && reload && reload());
-
+                        } else if (!checkDataType) {
+                            resolve(response);
                         } else {
                             reject(response);
                         }
@@ -96,15 +132,23 @@ export class CrudRequest {
             ajaxOptions.type = method;
             ajaxOptions.url = baseUrl + prefix + url;
 
-            if (data instanceof FormData) {
-                ajaxOptions.type = "post";
+            if (method.toLowerCase() === 'post') {
+                const formData = new FormData().merge(data);
+                ajaxOptions.data = formData;
             } else {
                 ajaxOptions.data = data;
             }
 
+            if (ajaxOptions.data instanceof FormData) {
+                ajaxOptions.type = "post";
+                ajaxOptions.cache = false;
+                ajaxOptions.processData = false;
+                ajaxOptions.contentType = false;
+            }
+
             showProgress && loading && loading(true);
 
-            ajax(ajaxOptions);
+            $.ajax(ajaxOptions);
         })
     }
 
@@ -142,6 +186,8 @@ export class CrudRequest {
         return this.send({
             method: "get",
             prefix: "retrieve/",
+            checkDataType: false,
+            notify: false,
             ...options,
             url: url,
             data: data,
@@ -166,6 +212,36 @@ export class CrudRequest {
 
     notify(options: any): void {
         this.$config.callbacks.notify(options);
+    }
+
+    chooseFile(options: ChooseFileOptions = {}): Promise<File | File[]> {
+        const {multiple, accept} = options;
+        let input: HTMLInputElement = document.querySelector('.sk-file-input');
+        if (!input) {
+            input = document.createElement('input');
+            input.type = "file";
+            input.accept = _.isArray(accept) ? accept.join(",") : accept;
+            input.multiple = multiple;
+            input.style.display = "none";
+            input.className = "sk-file-input";
+            document.querySelector("body").appendChild(input);
+        }
+        $('input').click();
+        return new Promise(resolve => {
+            $(input).one('change', e => {
+                const files = e.currentTarget.files;
+                const filesArray = [];
+                _.each(files, file => {
+                    file.url = URL.createObjectURL(file);
+                    filesArray.push(file)
+                });
+                if (multiple) {
+                    resolve(filesArray);
+                } else {
+                    resolve(files[0]);
+                }
+            })
+        })
     }
 }
 
