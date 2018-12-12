@@ -6,4 +6,8 @@ This is a great library for CRUD operations in javascript. Also, it has built in
 
 <strong>Installation</strong>
 
-`npm install crud-sk`
+`npm install @crud/core`
+
+or
+
+`yarn add @crud/core`
