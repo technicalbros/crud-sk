@@ -35,9 +35,9 @@ var mergeData = function (formData, data, key) {
             mergeData(formData, value, name);
         });
     }
-    else if (key) {
+    else if (key && data !== undefined) {
         // @ts-ignore
-        formData.append(key, data);
+        formData.append(key, data === null ? "" : data);
     }
 };
 FormData.prototype.merge = function (data) {
@@ -62,6 +62,7 @@ function default_1(config) {
             if (!_.isEmpty(data)) {
                 if (method.toLowerCase() === 'post') {
                     if (!(data instanceof FormData)) {
+                        console.log('formData', data);
                         var formData = new FormData().merge(data);
                         requestOptions.body = formData;
                     }
@@ -92,17 +93,25 @@ function default_1(config) {
                         else {
                             reject(response);
                         }
-                        var notification = {
+                        config.notify && notify && notify({
                             type: response.type,
                             message: response.message
-                        };
-                        config.notify && notify && notify(notification);
+                        });
                     }
                     else {
                         resolve(response);
                     }
+                }).catch(function (e) {
+                    showProgress && loading && loading(false);
+                    config.notify && notify && notify({
+                        type: "error",
+                        message: "Something went wrong"
+                    });
                 });
-            }, reject);
+            }, function (error) {
+                showProgress && loading && loading(false);
+                reject(error);
+            });
         });
     };
     return config;

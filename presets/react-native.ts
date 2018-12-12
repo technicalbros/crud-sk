@@ -27,9 +27,9 @@ var mergeData = (formData: FormData | URLSearchParams, data: any, key?: string) 
             const name = key ? `${key}[${_key}]` : _key;
             mergeData(formData, value, name);
         })
-    } else if (key) {
+    } else if (key && data !== undefined) {
         // @ts-ignore
-        formData.append(key, data);
+        formData.append(key, data === null ? "" : data);
     }
 }
 
@@ -57,7 +57,20 @@ export default function (config: RequestOptions) {
                 ...options,
             }
 
-            const {data, callbacks, method = "get", baseUrl, url, redirectTo, showProgress, prefix = "", suffix = "", extension = "", checkDataType, ajaxOptions} = config;
+            const {
+                data,
+                callbacks,
+                method = "get",
+                baseUrl,
+                url,
+                redirectTo,
+                showProgress,
+                prefix = "",
+                suffix = "",
+                extension = "",
+                checkDataType,
+                ajaxOptions
+            } = config;
             const reloadPage = config.reload;
             const {loading, reload, redirect, checkSuccess, notify} = callbacks;
 
@@ -73,6 +86,7 @@ export default function (config: RequestOptions) {
             if (!_.isEmpty(data)) {
                 if (method.toLowerCase() === 'post') {
                     if (!(data instanceof FormData)) {
+                        console.log('formData', data)
                         const formData = new FormData().merge(data);
                         requestOptions.body = formData;
                     }
@@ -92,9 +106,7 @@ export default function (config: RequestOptions) {
 
             fetch(_url, requestOptions).then(data => {
                 data.json().then(response => {
-
                     showProgress && loading && loading(false);
-
                     if (checkSuccess) {
                         if (checkDataType && checkSuccess(response)) {
                             resolve(response);
@@ -105,16 +117,24 @@ export default function (config: RequestOptions) {
                         } else {
                             reject(response);
                         }
-                        const notification: any = {
+                        config.notify && notify && notify({
                             type: response.type,
                             message: response.message
-                        }
-                        config.notify && notify && notify(notification);
+                        });
                     } else {
                         resolve(response);
                     }
+                }).catch(e => {
+                    showProgress && loading && loading(false);
+                    config.notify && notify && notify({
+                        type: "error",
+                        message: "Something went wrong"
+                    });
                 })
-            }, reject)
+            }, (error) => {
+                showProgress && loading && loading(false);
+                reject(error)
+            })
         })
     }
 
