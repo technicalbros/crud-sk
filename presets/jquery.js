@@ -31,14 +31,14 @@ var mergeData = function (formData, data, key) {
         });
     }
     else if (key) {
-        formData.append(key, data);
+        formData.append(key, data || '');
     }
 };
 FormData.prototype.merge = function (data) {
     mergeData(this, data);
     return this;
 };
-function default_1(config) {
+function ajaxRequest(config) {
     var _this = this;
     var callbacks = config.callbacks;
     callbacks.sendRequest = function (options) { return new Promise(function (resolve, reject) {
@@ -88,8 +88,7 @@ function default_1(config) {
         ajaxOptions.type = method;
         ajaxOptions.url = baseUrl + prefix + url + suffix + extension;
         if (method.toLowerCase() === 'post' && !(data instanceof FormData)) {
-            var formData = new FormData().merge(data);
-            ajaxOptions.data = formData;
+            ajaxOptions.data = new FormData().merge(data);
         }
         else {
             ajaxOptions.data = data;
@@ -103,36 +102,7 @@ function default_1(config) {
         showProgress && loading && loading(true);
         jquery_1.default.ajax(ajaxOptions);
     }); };
-    callbacks.chooseFile = function (options) {
-        var multiple = options.multiple, accept = options.accept;
-        var input = document.querySelector('.sk-file-input');
-        if (!input) {
-            input = document.createElement('input');
-            input.type = "file";
-            input.accept = _.isArray(accept) ? accept.join(",") : accept;
-            input.multiple = multiple;
-            input.style.display = "none";
-            input.className = "sk-file-input";
-            document.querySelector("body").appendChild(input);
-        }
-        jquery_1.default('input').click();
-        return new Promise(function (resolve) {
-            jquery_1.default(input).one('change', function (e) {
-                var files = e.currentTarget.files;
-                var filesArray = [];
-                _.each(files, function (file) {
-                    file.url = URL.createObjectURL(file);
-                    filesArray.push(file);
-                });
-                if (multiple) {
-                    resolve(filesArray);
-                }
-                else {
-                    resolve(files[0]);
-                }
-            });
-        });
-    };
     return config;
 }
-exports.default = default_1;
+exports.ajaxRequest = ajaxRequest;
+exports.default = ajaxRequest;

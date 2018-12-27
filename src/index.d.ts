@@ -33,7 +33,6 @@ export interface ChooseFileOptions {
 }
 export declare class CrudRequest {
     $config: RequestOptions;
-
     config(callback: (config: RequestOptions) => RequestOptions): CrudRequest;
     send(options: RequestOptions): Promise<any>;
     create(url: string, data?: any, options?: RequestOptions): Promise<any>;
@@ -44,7 +43,6 @@ export declare class CrudRequest {
     confirm(options: any): Promise<boolean>;
     prompt(options: any): Promise<any>;
     dialog(name: string, options: any): Promise<any>;
-
     notify(options: any): Promise<any>;
     chooseFile(options?: ChooseFileOptions): Promise<File | File[]>;
 }

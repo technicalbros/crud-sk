@@ -29,7 +29,7 @@ var mergeData = (formData: FormData | URLSearchParams, data: any, key?: string) 
         })
     } else if (key && data !== undefined) {
         // @ts-ignore
-        formData.append(key, data === null ? "" : data);
+        formData.append(key, (data !== false && !data) ? "" : data);
     }
 }
 
@@ -43,7 +43,7 @@ URLSearchParams.prototype.merge = function (data: Object) {
     return this;
 }
 
-export default function (config: RequestOptions) {
+function fetchRequest(config: RequestOptions) {
 
     const {callbacks} = config;
 
@@ -140,3 +140,5 @@ export default function (config: RequestOptions) {
 
     return config;
 }
+
+export default fetchRequest;

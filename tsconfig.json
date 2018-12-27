@@ -4,6 +4,7 @@
     "module": "commonjs",
     "skipLibCheck": true,
     "declaration": true,
+    "jsx": "react",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,

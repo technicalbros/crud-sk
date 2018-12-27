@@ -1,4 +1,4 @@
-import {ChooseFileOptions, RequestOptions} from "../src";
+import {RequestOptions} from "../src";
 import * as _ from "lodash";
 import $ from "jquery";
 import AjaxSettings = JQuery.AjaxSettings;
@@ -20,7 +20,7 @@ const mergeData = (formData: FormData, data: any, key?: string) => {
             mergeData(formData, value, name);
         })
     } else if (key) {
-        formData.append(key, data);
+        formData.append(key, data || '');
     }
 
 }
@@ -30,7 +30,7 @@ FormData.prototype.merge = function (data: Object) {
     return this;
 };
 
-export default function (config: RequestOptions) {
+export function ajaxRequest(config: RequestOptions) {
 
     const {callbacks} = config;
 
@@ -90,8 +90,7 @@ export default function (config: RequestOptions) {
         ajaxOptions.url = baseUrl + prefix + url + suffix + extension;
 
         if (method.toLowerCase() === 'post' && !(data instanceof FormData)) {
-            const formData = new FormData().merge(data);
-            ajaxOptions.data = formData;
+            ajaxOptions.data = new FormData().merge(data);
         } else {
             ajaxOptions.data = data;
         }
@@ -108,35 +107,7 @@ export default function (config: RequestOptions) {
         $.ajax(ajaxOptions);
     })
 
-    callbacks.chooseFile = (options: ChooseFileOptions): Promise<File | File[]> => {
-        const {multiple, accept} = options;
-        let input: HTMLInputElement = document.querySelector('.sk-file-input');
-        if (!input) {
-            input = document.createElement('input');
-            input.type = "file";
-            input.accept = _.isArray(accept) ? accept.join(",") : accept;
-            input.multiple = multiple;
-            input.style.display = "none";
-            input.className = "sk-file-input";
-            document.querySelector("body").appendChild(input);
-        }
-        $('input').click();
-        return new Promise(resolve => {
-            $(input).one('change', e => {
-                const files = e.currentTarget.files;
-                const filesArray = [];
-                _.each(files, file => {
-                    file.url = URL.createObjectURL(file);
-                    filesArray.push(file)
-                });
-                if (multiple) {
-                    resolve(filesArray);
-                } else {
-                    resolve(files[0]);
-                }
-            })
-        })
-    }
-
     return config;
 }
+
+export default ajaxRequest;

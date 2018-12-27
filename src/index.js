@@ -16,11 +16,9 @@ var CrudRequest = /** @class */ (function () {
         this.$config = {
             baseUrl: "",
             callbacks: {
-                notify: function (data) {
-                    return new Promise(function (resolve, reject) {
-                        alert(data.message);
-                    });
-                },
+                notify: function (data) { return new Promise(function (resolve, reject) {
+                    alert(data.message);
+                }); },
                 checkSuccess: function (data) {
                     if (data.type === 'success') {
                         return true;
@@ -32,7 +30,6 @@ var CrudRequest = /** @class */ (function () {
             }
         };
     }
-
     CrudRequest.prototype.config = function (callback) {
         this.$config = callback.apply(this, [__assign({}, this.$config)]);
         return this;
