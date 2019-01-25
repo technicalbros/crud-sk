@@ -4,14 +4,15 @@ export interface RequestOptions {
         loading?: (value: boolean) => void;
         redirect?: (to: any, data?: any) => void;
         reload?: () => void;
+        createRequest?: () => void;
         checkSuccess?: (data: any) => boolean;
-        notify?: (data: any) => Promise<any>;
-        dialog?: (component: any, options: any) => Promise<any>;
-        prompt?: (options: any) => Promise<any>;
-        confirm?: (options: any) => Promise<any>;
-        alert?: (options: any) => Promise<any>;
-        sendRequest?: (options: RequestOptions) => Promise<any>;
-        chooseFile?: (options: ChooseFileOptions) => Promise<File | File[]>;
+        notify?: (this: CrudRequest, data: any) => Promise<any>;
+        dialog?: (this: CrudRequest, component: any, options: any) => Promise<any>;
+        prompt?: (this: CrudRequest, options: any) => Promise<any>;
+        confirm?: (this: CrudRequest, options: any) => Promise<any>;
+        alert?: (this: CrudRequest, options: any) => Promise<any>;
+        sendRequest?: (this: CrudRequest, options: RequestOptions) => Promise<any>;
+        chooseFile?: (this: CrudRequest, options: ChooseFileOptions) => Promise<File | File[]>;
     };
     prefix?: string;
     suffix?: string;
@@ -33,18 +34,18 @@ export interface ChooseFileOptions {
 }
 export declare class CrudRequest {
     $config: RequestOptions;
-
-    config(callback: (config: RequestOptions) => RequestOptions): CrudRequest;
+    config(callback: (this: CrudRequest, config: RequestOptions) => RequestOptions): CrudRequest;
     send(options: RequestOptions): Promise<any>;
     create(url: string, data?: any, options?: RequestOptions): Promise<any>;
     update(url: string, data?: any, options?: RequestOptions): Promise<any>;
     delete(url: string, data?: any, options?: RequestOptions): Promise<any>;
     retrieve(url: string, data?: any, options?: RequestOptions): Promise<any>;
+    redirect(to: any, options: any): void;
     alert(options: any): Promise<any>;
     confirm(options: any): Promise<boolean>;
     prompt(options: any): Promise<any>;
     dialog(name: string, options: any): Promise<any>;
-
     notify(options: any): Promise<any>;
+    toggleLoading(value: boolean): void;
     chooseFile(options?: ChooseFileOptions): Promise<File | File[]>;
 }

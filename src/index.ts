@@ -4,14 +4,15 @@ export interface RequestOptions {
         loading?: (value: boolean) => void,
         redirect?: (to: any, data?: any) => void,
         reload?: () => void,
+        createRequest?: () => void,
         checkSuccess?: (data: any) => boolean,
-        notify?: (data: any) => Promise<any>,
-        dialog?: (component: any, options: any) => Promise<any>,
-        prompt?: (options: any) => Promise<any>,
-        confirm?: (options: any) => Promise<any>,
-        alert?: (options: any) => Promise<any>,
-        sendRequest?: (options: RequestOptions) => Promise<any>,
-        chooseFile?: (options: ChooseFileOptions) => Promise<File | File[]>
+        notify?: (this: CrudRequest, data: any) => Promise<any>,
+        dialog?: (this: CrudRequest, component: any, options: any) => Promise<any>,
+        prompt?: (this: CrudRequest, options: any) => Promise<any>,
+        confirm?: (this: CrudRequest, options: any) => Promise<any>,
+        alert?: (this: CrudRequest, options: any) => Promise<any>,
+        sendRequest?: (this: CrudRequest, options: RequestOptions) => Promise<any>,
+        chooseFile?: (this: CrudRequest, options: ChooseFileOptions) => Promise<File | File[]>
     },
     prefix?: string,
     suffix?: string,
@@ -51,7 +52,7 @@ export class CrudRequest {
         }
     }
 
-    config(callback: (config: RequestOptions) => RequestOptions): CrudRequest {
+    config(callback: (this: CrudRequest, config: RequestOptions) => RequestOptions): CrudRequest {
         this.$config = callback.apply(this, [{...this.$config}]);
         return this;
     }
@@ -70,7 +71,7 @@ export class CrudRequest {
         })
     }
 
-    update(url: string, data?: any, options?: RequestOptions) {
+    update(url: string, data?: any, options?: RequestOptions): Promise<any> {
         return this.send({
             method: "post",
             prefix: "update/",
@@ -80,7 +81,7 @@ export class CrudRequest {
         })
     }
 
-    delete(url: string, data?: any, options?: RequestOptions) {
+    delete(url: string, data?: any, options?: RequestOptions): Promise<any> {
         return this.send({
             method: "post",
             prefix: "delete/",
@@ -90,7 +91,7 @@ export class CrudRequest {
         })
     }
 
-    retrieve(url: string, data?: any, options?: RequestOptions) {
+    retrieve(url: string, data?: any, options?: RequestOptions): Promise<any> {
         return this.send({
             method: "get",
             prefix: "retrieve/",
@@ -100,6 +101,10 @@ export class CrudRequest {
             url: url,
             data: data,
         })
+    }
+
+    redirect(to: any, options: any): void {
+        this.$config.callbacks.redirect(to, options);
     }
 
     alert(options: any): Promise<any> {
@@ -120,6 +125,10 @@ export class CrudRequest {
 
     notify(options: any): Promise<any> {
         return this.$config.callbacks.notify.apply(this, [options]);
+    }
+
+    toggleLoading(value: boolean): void {
+        this.$config.callbacks.loading(value);
     }
 
     chooseFile(options: ChooseFileOptions = {}): Promise<File | File[]> {

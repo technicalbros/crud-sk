@@ -1,4 +1,4 @@
-import {ChooseFileOptions, RequestOptions} from "../src";
+import {ChooseFileOptions, CrudRequest, RequestOptions} from "../src";
 import * as _ from "lodash";
 import $ from "jquery";
 import AjaxSettings = JQuery.AjaxSettings;
@@ -30,7 +30,7 @@ FormData.prototype.merge = function (data: Object) {
     return this;
 };
 
-export default function (config: RequestOptions) {
+export default function (this: CrudRequest, config: RequestOptions) {
 
     const {callbacks} = config;
 
@@ -72,16 +72,16 @@ export default function (config: RequestOptions) {
                         type: response.type,
                         message: response.message
                     }
-                    config.notify && notify && notify(notification);
+                    this.notify(notification);
                 }
             },
             error: (error) => {
-                showProgress && loading && loading(false);
+                this.toggleLoading(false);
                 const notification: any = {
                     type: "error"
                 }
                 notification.message = `${error.status}: ${error.statusText}`;
-                config.notify && notify && notify(notification);
+                this.notify(notification);
                 reject(error)
             }
         }

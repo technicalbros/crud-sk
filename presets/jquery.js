@@ -74,15 +74,15 @@ function default_1(config) {
                         type: response.type,
                         message: response.message
                     };
-                    config.notify && notify && notify(notification);
+                    _this.notify(notification);
                 }
             }, error: function (error) {
-                showProgress && loading && loading(false);
+                _this.toggleLoading(false);
                 var notification = {
                     type: "error"
                 };
                 notification.message = error.status + ": " + error.statusText;
-                config.notify && notify && notify(notification);
+                _this.notify(notification);
                 reject(error);
             } });
         ajaxOptions.type = method;

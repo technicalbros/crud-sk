@@ -16,11 +16,9 @@ var CrudRequest = /** @class */ (function () {
         this.$config = {
             baseUrl: "",
             callbacks: {
-                notify: function (data) {
-                    return new Promise(function (resolve, reject) {
-                        alert(data.message);
-                    });
-                },
+                notify: function (data) { return new Promise(function (resolve, reject) {
+                    alert(data.message);
+                }); },
                 checkSuccess: function (data) {
                     if (data.type === 'success') {
                         return true;
@@ -32,7 +30,6 @@ var CrudRequest = /** @class */ (function () {
             }
         };
     }
-
     CrudRequest.prototype.config = function (callback) {
         this.$config = callback.apply(this, [__assign({}, this.$config)]);
         return this;
@@ -52,6 +49,9 @@ var CrudRequest = /** @class */ (function () {
     CrudRequest.prototype.retrieve = function (url, data, options) {
         return this.send(__assign({ method: "get", prefix: "retrieve/", checkDataType: false, notify: false }, options, { url: url, data: data }));
     };
+    CrudRequest.prototype.redirect = function (to, options) {
+        this.$config.callbacks.redirect(to, options);
+    };
     CrudRequest.prototype.alert = function (options) {
         return this.$config.callbacks.alert.apply(this, [options]);
     };
@@ -66,6 +66,9 @@ var CrudRequest = /** @class */ (function () {
     };
     CrudRequest.prototype.notify = function (options) {
         return this.$config.callbacks.notify.apply(this, [options]);
+    };
+    CrudRequest.prototype.toggleLoading = function (value) {
+        this.$config.callbacks.loading(value);
     };
     CrudRequest.prototype.chooseFile = function (options) {
         if (options === void 0) { options = {}; }
