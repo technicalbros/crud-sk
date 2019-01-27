@@ -7,4 +7,5 @@ declare global {
         url: string;
     }
 }
-export default function (this: CrudRequest, config: RequestOptions): RequestOptions;
+export declare function ajaxRequest(this: CrudRequest, config: RequestOptions): RequestOptions;
+export default ajaxRequest;

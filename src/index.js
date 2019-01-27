@@ -31,7 +31,9 @@ var CrudRequest = /** @class */ (function () {
         };
     }
     CrudRequest.prototype.config = function (callback) {
-        this.$config = callback.apply(this, [__assign({}, this.$config)]);
+        var config = __assign({}, this.$config);
+        callback.apply(this, [config]);
+        this.$config = config;
         return this;
     };
     CrudRequest.prototype.send = function (options) {
@@ -68,11 +70,14 @@ var CrudRequest = /** @class */ (function () {
         return this.$config.callbacks.notify.apply(this, [options]);
     };
     CrudRequest.prototype.toggleLoading = function (value) {
-        this.$config.callbacks.loading(value);
+        this.$config.callbacks.loading.apply(this, [value]);
     };
     CrudRequest.prototype.chooseFile = function (options) {
         if (options === void 0) { options = {}; }
         return this.$config.callbacks.chooseFile.apply(this, [options]);
+    };
+    CrudRequest.prototype.reload = function () {
+        this.$config.callbacks.reload.apply(this);
     };
     return CrudRequest;
 }());

@@ -1,5 +1,5 @@
 import * as _ from "lodash";
-import {RequestOptions} from "../src";
+import {CrudRequest, RequestOptions} from "../src";
 import URLSearchParams = require("url-search-params");
 
 declare global {
@@ -21,15 +21,14 @@ const isFile = value => {
 }
 
 
-var mergeData = (formData: FormData | URLSearchParams, data: any, key?: string) => {
+const mergeData = (formData: FormData | URLSearchParams, data: any, key?: string) => {
     if (_.isObject(data) && !isFile(data)) {
         _.each(data, (value, _key) => {
             const name = key ? `${key}[${_key}]` : _key;
             mergeData(formData, value, name);
         })
     } else if (key && data !== undefined) {
-        // @ts-ignore
-        formData.append(key, data === null ? "" : data);
+        formData.append(key, (data !== false && !data) ? "" : data);
     }
 }
 
@@ -43,7 +42,7 @@ URLSearchParams.prototype.merge = function (data: Object) {
     return this;
 }
 
-export default function (config: RequestOptions) {
+function fetchRequest(this: CrudRequest, config: RequestOptions) {
 
     const {callbacks} = config;
 
@@ -51,8 +50,8 @@ export default function (config: RequestOptions) {
         return new Promise((resolve, reject) => {
             const config = {
                 checkDataType: true,
-                notify: true,
                 showProgress: true,
+                notify: true,
                 ...this.$config,
                 ...options,
             }
@@ -69,9 +68,9 @@ export default function (config: RequestOptions) {
                 suffix = "",
                 extension = "",
                 checkDataType,
-                ajaxOptions
+                ajaxOptions,
+                reload: reloadPage
             } = config;
-            const reloadPage = config.reload;
             const {loading, reload, redirect, checkSuccess, notify} = callbacks;
 
 
@@ -102,22 +101,25 @@ export default function (config: RequestOptions) {
                 }
             }
 
-            showProgress && loading && loading(true);
+            this.toggleLoading(true);
 
             fetch(_url, requestOptions).then(data => {
                 data.json().then(response => {
-                    showProgress && loading && loading(false);
+
+                    showProgress && loading && this.toggleLoading(false);
+
                     if (checkSuccess) {
                         if (checkDataType && checkSuccess(response)) {
                             resolve(response);
                             // @ts-ignore
-                            (redirectTo && redirect && redirect(redirectTo, response)) || (reloadPage && reload && reload());
+                            redirectTo && this.redirect(redirectTo)
+                            reloadPage && this.reload();
                         } else if (!checkDataType) {
                             resolve(response);
                         } else {
                             reject(response);
                         }
-                        config.notify && notify && notify({
+                        this.notify({
                             type: response.type,
                             message: response.message
                         });
@@ -125,14 +127,18 @@ export default function (config: RequestOptions) {
                         resolve(response);
                     }
                 }).catch(e => {
-                    showProgress && loading && loading(false);
-                    config.notify && notify && notify({
+
+                    showProgress && loading && this.toggleLoading(false);
+
+                    notify && this.notify({
                         type: "error",
                         message: "Something went wrong"
                     });
                 })
             }, (error) => {
-                showProgress && loading && loading(false);
+
+                showProgress && loading && this.toggleLoading(false);
+
                 reject(error)
             })
         })
@@ -140,3 +146,5 @@ export default function (config: RequestOptions) {
 
     return config;
 }
+
+export default fetchRequest;

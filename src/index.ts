@@ -1,7 +1,7 @@
 export interface RequestOptions {
     baseUrl?: string,
     callbacks?: {
-        loading?: (value: boolean) => void,
+        loading?: (this: CrudRequest, value: boolean) => void,
         redirect?: (to: any, data?: any) => void,
         reload?: () => void,
         createRequest?: () => void,
@@ -52,8 +52,10 @@ export class CrudRequest {
         }
     }
 
-    config(callback: (this: CrudRequest, config: RequestOptions) => RequestOptions): CrudRequest {
-        this.$config = callback.apply(this, [{...this.$config}]);
+    config(callback: (this: CrudRequest, config: RequestOptions) => RequestOptions): this {
+        const config = {...this.$config}
+        callback.apply(this, [config]);
+        this.$config = config;
         return this;
     }
 
@@ -103,19 +105,19 @@ export class CrudRequest {
         })
     }
 
-    redirect(to: any, options: any): void {
+    redirect(to: any, options?: any): void {
         this.$config.callbacks.redirect(to, options);
     }
 
-    alert(options: any): Promise<any> {
+    alert(options?: any): Promise<any> {
         return this.$config.callbacks.alert.apply(this, [options]);
     }
 
-    confirm(options: any): Promise<boolean> {
+    confirm(options?: any): Promise<boolean> {
         return this.$config.callbacks.confirm.apply(this, [options]);
     }
 
-    prompt(options: any): Promise<any> {
+    prompt(options?: any): Promise<any> {
         return this.$config.callbacks.prompt.apply(this, [options]);
     }
 
@@ -123,15 +125,19 @@ export class CrudRequest {
         return this.$config.callbacks.dialog.apply(this, [name, options]);
     }
 
-    notify(options: any): Promise<any> {
+    notify(options?: any): Promise<any> {
         return this.$config.callbacks.notify.apply(this, [options]);
     }
 
     toggleLoading(value: boolean): void {
-        this.$config.callbacks.loading(value);
+        this.$config.callbacks.loading.apply(this, [value]);
     }
 
     chooseFile(options: ChooseFileOptions = {}): Promise<File | File[]> {
         return this.$config.callbacks.chooseFile.apply(this, [options]);
+    }
+
+    reload(): void {
+        this.$config.callbacks.reload.apply(this);
     }
 }

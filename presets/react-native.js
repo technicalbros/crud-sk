@@ -36,8 +36,7 @@ var mergeData = function (formData, data, key) {
         });
     }
     else if (key && data !== undefined) {
-        // @ts-ignore
-        formData.append(key, data === null ? "" : data);
+        formData.append(key, (data !== false && !data) ? "" : data);
     }
 };
 FormData.prototype.merge = function (data) {
@@ -48,14 +47,13 @@ URLSearchParams.prototype.merge = function (data) {
     mergeData(this, data);
     return this;
 };
-function default_1(config) {
+function fetchRequest(config) {
     var callbacks = config.callbacks;
     callbacks.sendRequest = function (options) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            var config = __assign({ checkDataType: true, notify: true, showProgress: true }, _this.$config, options);
-            var data = config.data, callbacks = config.callbacks, _a = config.method, method = _a === void 0 ? "get" : _a, baseUrl = config.baseUrl, url = config.url, redirectTo = config.redirectTo, showProgress = config.showProgress, _b = config.prefix, prefix = _b === void 0 ? "" : _b, _c = config.suffix, suffix = _c === void 0 ? "" : _c, _d = config.extension, extension = _d === void 0 ? "" : _d, checkDataType = config.checkDataType, ajaxOptions = config.ajaxOptions;
-            var reloadPage = config.reload;
+            var config = __assign({ checkDataType: true, showProgress: true, notify: true }, _this.$config, options);
+            var data = config.data, callbacks = config.callbacks, _a = config.method, method = _a === void 0 ? "get" : _a, baseUrl = config.baseUrl, url = config.url, redirectTo = config.redirectTo, showProgress = config.showProgress, _b = config.prefix, prefix = _b === void 0 ? "" : _b, _c = config.suffix, suffix = _c === void 0 ? "" : _c, _d = config.extension, extension = _d === void 0 ? "" : _d, checkDataType = config.checkDataType, ajaxOptions = config.ajaxOptions, reloadPage = config.reload;
             var loading = callbacks.loading, reload = callbacks.reload, redirect = callbacks.redirect, checkSuccess = callbacks.checkSuccess, notify = callbacks.notify;
             var requestOptions = __assign({}, ajaxOptions, { method: method, credentials: "include" });
             var _url = baseUrl + prefix + url + suffix + extension;
@@ -77,15 +75,16 @@ function default_1(config) {
                     };
                 }
             }
-            showProgress && loading && loading(true);
+            _this.toggleLoading(true);
             fetch(_url, requestOptions).then(function (data) {
                 data.json().then(function (response) {
-                    showProgress && loading && loading(false);
+                    showProgress && loading && _this.toggleLoading(false);
                     if (checkSuccess) {
                         if (checkDataType && checkSuccess(response)) {
                             resolve(response);
                             // @ts-ignore
-                            (redirectTo && redirect && redirect(redirectTo, response)) || (reloadPage && reload && reload());
+                            redirectTo && _this.redirect(redirectTo);
+                            reloadPage && _this.reload();
                         }
                         else if (!checkDataType) {
                             resolve(response);
@@ -93,7 +92,7 @@ function default_1(config) {
                         else {
                             reject(response);
                         }
-                        config.notify && notify && notify({
+                        _this.notify({
                             type: response.type,
                             message: response.message
                         });
@@ -102,18 +101,18 @@ function default_1(config) {
                         resolve(response);
                     }
                 }).catch(function (e) {
-                    showProgress && loading && loading(false);
-                    config.notify && notify && notify({
+                    showProgress && loading && _this.toggleLoading(false);
+                    notify && _this.notify({
                         type: "error",
                         message: "Something went wrong"
                     });
                 });
             }, function (error) {
-                showProgress && loading && loading(false);
+                showProgress && loading && _this.toggleLoading(false);
                 reject(error);
             });
         });
     };
     return config;
 }
-exports.default = default_1;
+exports.default = fetchRequest;
