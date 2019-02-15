@@ -44,6 +44,16 @@ URLSearchParams.prototype.merge = function (data: Object) {
 
 export function fetchRequest(this: CrudRequest, $config: RequestOptions): RequestOptions {
 
+    $config.callbacks.redirect = (to: string) => {
+        window.location.href = to
+    }
+
+    $config.callbacks.reload = () => window.location.reload()
+
+    $config.callbacks.alert = ({title, textContent}) => new Promise(() => {
+        alert(`${title} : ${textContent}`)
+    })
+
     $config.callbacks.sendRequest = function (options: RequestOptions) {
         return new Promise((resolve, reject) => {
 

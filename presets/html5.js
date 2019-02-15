@@ -42,6 +42,16 @@ URLSearchParams.prototype.merge = function (data) {
     return this;
 };
 function fetchRequest($config) {
+    $config.callbacks.redirect = function (to) {
+        window.location.href = to;
+    };
+    $config.callbacks.reload = function () { return window.location.reload(); };
+    $config.callbacks.alert = function (_a) {
+        var title = _a.title, textContent = _a.textContent;
+        return new Promise(function () {
+            alert(title + " : " + textContent);
+        });
+    };
     $config.callbacks.sendRequest = function (options) {
         var _this = this;
         return new Promise(function (resolve, reject) {

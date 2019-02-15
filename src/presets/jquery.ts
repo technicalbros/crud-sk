@@ -33,6 +33,17 @@ export function ajaxRequest(this: CrudRequest, config: RequestOptions) {
 
     const {callbacks} = config;
 
+    callbacks.redirect = (to: string) => {
+        window.location.href = to
+    }
+
+    callbacks.reload = () => window.location.reload()
+
+    callbacks.notify = ({message, type}) => this.alert({
+        title: type === 'success' ? "Success" : "Error",
+        textContent: message
+    })
+
     callbacks.sendRequest = (options: RequestOptions) => {
 
         const config = {
