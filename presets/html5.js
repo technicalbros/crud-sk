@@ -129,8 +129,8 @@ function fetchRequest($config) {
 exports.fetchRequest = fetchRequest;
 function chooseFile(config) {
     var callbacks = config.callbacks;
-    callbacks.chooseFile = function (options) {
-        var multiple = options.multiple, accept = options.accept;
+    callbacks.chooseFile = function (_a) {
+        var _b = _a === void 0 ? {} : _a, multiple = _b.multiple, accept = _b.accept;
         var input = document.querySelector('.sk-file-input');
         if (!input) {
             input = document.createElement('input');

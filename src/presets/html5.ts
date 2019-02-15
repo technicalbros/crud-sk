@@ -162,8 +162,8 @@ export function chooseFile(config: RequestOptions): RequestOptions {
 
     const {callbacks} = config;
 
-    callbacks.chooseFile = (options: ChooseFileOptions): Promise<File | File[]> => {
-        const {multiple, accept} = options;
+    callbacks.chooseFile = ({multiple, accept}: ChooseFileOptions = {}): Promise<File | File[]> => {
+        
         let input: HTMLInputElement = document.querySelector('.sk-file-input');
 
         if (!input) {

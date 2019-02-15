@@ -15,7 +15,6 @@ var CrudRequest = /** @class */ (function () {
     function CrudRequest() {
         var _this = this;
         this.defaultConfig = {
-            baseUrl: "",
             callbacks: {
                 checkSuccess: function (_a) {
                     var type = (_a === void 0 ? {} : _a).type;

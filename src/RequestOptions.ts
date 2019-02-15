@@ -13,12 +13,12 @@ export interface RequestOptions {
         updateRequest?: (this: CrudRequest, url: string, data?: any, options?: RequestOptions) => Promise<any>,
         deleteRequest?: (this: CrudRequest, url: string, data?: any, options?: RequestOptions) => Promise<any>,
         notify?: (this: CrudRequest, data: any) => Promise<any>,
-        dialog?: (this: CrudRequest, component: any, options: any) => Promise<any>,
-        prompt?: (this: CrudRequest, options: any) => Promise<any>,
-        confirm?: (this: CrudRequest, options: any) => Promise<any>,
-        alert?: (this: CrudRequest, options: any) => Promise<any>,
-        sendRequest?: (this: CrudRequest, options: RequestOptions) => Promise<any>,
-        chooseFile?: (this: CrudRequest, options: ChooseFileOptions) => Promise<File | File[]>
+        dialog?: (this: CrudRequest, component: any, options?: any) => Promise<any>,
+        prompt?: (this: CrudRequest, options?: any) => Promise<any>,
+        confirm?: (this: CrudRequest, options?: any) => Promise<any>,
+        alert?: (this: CrudRequest, options?: any) => Promise<any>,
+        sendRequest?: (this: CrudRequest, options?: RequestOptions) => Promise<any>,
+        chooseFile?: (this: CrudRequest, options?: ChooseFileOptions) => Promise<File | File[]>
     },
     prefix?: string,
     suffix?: string,

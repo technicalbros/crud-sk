@@ -4,7 +4,6 @@ import {ChooseFileOptions} from "./ChooseFileOptions";
 export class CrudRequest {
 
     defaultConfig: RequestOptions = {
-        baseUrl: "",
         callbacks: {
             checkSuccess: ({type} = {}) => {
                 return type === 'success';
