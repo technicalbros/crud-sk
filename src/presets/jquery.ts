@@ -34,30 +34,27 @@ export function ajaxRequest(this: CrudRequest, config: RequestOptions) {
     const {callbacks} = config;
 
     callbacks.sendRequest = (options: RequestOptions) => {
+
         const config = {
-            checkDataType: true,
-            showProgress: true,
-            notify: true,
-            ...this.$config,
+            ...this.defaultConfig,
             ...options,
         }
 
         const {
             data,
-            callbacks,
-            method = "get",
-            baseUrl,
             url,
-            redirectTo,
-            showProgress,
+            method = "get",
+            baseUrl = "",
             prefix = "",
             suffix = "",
             extension = "",
-            checkDataType,
-            notify
+            redirectTo = false,
+            showProgress = true,
+            checkDataType = true,
+            notify = true,
+            reload: reloadPage = false
         } = config;
-        const reloadPage = config.reload;
-        const {loading, reload, redirect, checkSuccess, notify: notifyCallback} = callbacks;
+
 
         return new Promise((resolve, reject) => {
 
@@ -78,7 +75,7 @@ export function ajaxRequest(this: CrudRequest, config: RequestOptions) {
                         resolve(response);
                     } else {
 
-                        if (!checkDataType || (checkDataType && checkSuccess(response))) {
+                        if (!checkDataType || this.call("checkDataType", [data])) {
                             resolve(response);
                         } else {
                             reject(response);
@@ -92,7 +89,6 @@ export function ajaxRequest(this: CrudRequest, config: RequestOptions) {
 
                 },
                 error: (error) => {
-
                     showProgress && this.toggleLoading(false);
 
                     notify && this.notify({
@@ -120,14 +116,14 @@ export function ajaxRequest(this: CrudRequest, config: RequestOptions) {
                 ajaxOptions.contentType = false;
             }
 
-            this.toggleLoading(true);
+            showProgress && this.toggleLoading(true);
 
             $.ajax(ajaxOptions);
 
         }).then(data => {
-            if (redirectTo && redirect) {
+            if (redirectTo) {
                 this.redirect(redirectTo);
-            } else if (reloadPage && reload) {
+            } else if (reloadPage) {
                 this.reload();
             }
             return data;

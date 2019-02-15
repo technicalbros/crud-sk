@@ -52,7 +52,7 @@ function fetchRequest(config) {
     callbacks.sendRequest = function (options) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            var config = __assign({ checkDataType: true, showProgress: true, notify: true }, _this.$config, options);
+            var config = __assign({ checkDataType: true, showProgress: true, notify: true }, _this.defaultConfig, options);
             var data = config.data, callbacks = config.callbacks, _a = config.method, method = _a === void 0 ? "get" : _a, baseUrl = config.baseUrl, url = config.url, redirectTo = config.redirectTo, showProgress = config.showProgress, _b = config.prefix, prefix = _b === void 0 ? "" : _b, _c = config.suffix, suffix = _c === void 0 ? "" : _c, _d = config.extension, extension = _d === void 0 ? "" : _d, checkDataType = config.checkDataType, ajaxOptions = config.ajaxOptions, reloadPage = config.reload;
             var loading = callbacks.loading, reload = callbacks.reload, redirect = callbacks.redirect, checkSuccess = callbacks.checkSuccess, notify = callbacks.notify;
             var requestOptions = __assign({}, ajaxOptions, { method: method, credentials: "include" });

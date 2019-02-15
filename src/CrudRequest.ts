@@ -3,108 +3,114 @@ import {ChooseFileOptions} from "./ChooseFileOptions";
 
 export class CrudRequest {
 
-    $config: RequestOptions = {
+    defaultConfig: RequestOptions = {
         baseUrl: "",
         callbacks: {
-            notify: (data) => new Promise((resolve, reject) => {
-                alert(data.message);
+            checkSuccess: ({type} = {}) => {
+                return type === 'success';
+            },
+            createRequest: (url, data, options) => this.send({
+                method: "post",
+                prefix: "create/",
+                ...options,
+                url: url,
+                data: data,
             }),
-            checkSuccess: (data) => {
-                if (data.type === 'success') {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
+            updateRequest: (url, data, options) => this.send({
+                method: "post",
+                prefix: "update/",
+                ...options,
+                url: url,
+                data: data,
+            }),
+            deleteRequest: (url, data, options) => this.send({
+                method: "post",
+                prefix: "delete/",
+                ...options,
+                url: url,
+                data: data,
+            }),
+            retrieveRequest: (url, data, options) => this.send({
+                method: "get",
+                prefix: "retrieve/",
+                checkDataType: false,
+                notify: false,
+                ...options,
+                url: url,
+                data: data,
+            })
+        }
+    }
+
+    call(callbackName: string, args: Array<any> = []): any {
+        const callback: Function = this.defaultConfig.callbacks[callbackName];
+        if (callback) {
+            return callback.apply(this, args)
+        } else {
+            console.warn(`No callback defined for '${callbackName}'`)
         }
     }
 
     config(callback: (this: CrudRequest, config: RequestOptions) => RequestOptions): this {
-        const config = {...this.$config}
-        callback.apply(this, [config]);
-        this.$config = config;
+        const config = {...this.defaultConfig}
+        callback.apply(this, [config])
+        this.defaultConfig = config;
         return this;
     }
 
     send(options: RequestOptions): Promise<any> {
-        return this.$config.callbacks.sendRequest.apply(this, [options]);
+        return this.call('sendRequest', [options]);
     }
 
     create(url: string, data?: any, options?: RequestOptions): Promise<any> {
-        return this.send({
-            method: "post",
-            prefix: "create/",
-            ...options,
-            url: url,
-            data: data,
-        })
-    }
-
-    update(url: string, data?: any, options?: RequestOptions): Promise<any> {
-        return this.send({
-            method: "post",
-            prefix: "update/",
-            ...options,
-            url: url,
-            data: data,
-        })
-    }
-
-    delete(url: string, data?: any, options?: RequestOptions): Promise<any> {
-        return this.send({
-            method: "post",
-            prefix: "delete/",
-            ...options,
-            url: url,
-            data: data,
-        })
+        return this.call("create", [url, data, options]);
     }
 
     retrieve(url: string, data?: any, options?: RequestOptions): Promise<any> {
-        return this.send({
-            method: "get",
-            prefix: "retrieve/",
-            checkDataType: false,
-            notify: false,
-            ...options,
-            url: url,
-            data: data,
-        })
+        return this.call("retrieve", [url, data, options]);
+    }
+
+    update(url: string, data?: any, options?: RequestOptions): Promise<any> {
+        return this.call("update", [url, data, options]);
+    }
+
+    delete(url: string, data?: any, options?: RequestOptions): Promise<any> {
+        return this.call("delete", [url, data, options]);
     }
 
     redirect(to: any, options?: any): void {
-        this.$config.callbacks.redirect(to, options);
-    }
-
-    alert(options?: any): Promise<any> {
-        return this.$config.callbacks.alert.apply(this, [options]);
-    }
-
-    confirm(options?: any): Promise<boolean> {
-        return this.$config.callbacks.confirm.apply(this, [options]);
-    }
-
-    prompt(options?: any): Promise<any> {
-        return this.$config.callbacks.prompt.apply(this, [options]);
-    }
-
-    dialog(name: string, options: any): Promise<any> {
-        return this.$config.callbacks.dialog.apply(this, [name, options]);
-    }
-
-    notify(options?: any): Promise<any> {
-        return this.$config.callbacks.notify.apply(this, [options]);
-    }
-
-    toggleLoading(value: boolean): void {
-        this.$config.callbacks.loading.apply(this, [value]);
-    }
-
-    chooseFile(options: ChooseFileOptions = {}): Promise<File | File[]> {
-        return this.$config.callbacks.chooseFile.apply(this, [options]);
+        this.call("redirect", [to, options])
     }
 
     reload(): void {
-        this.$config.callbacks.reload.apply(this);
+        this.call("confirm");
+    }
+
+    alert(options?: any): Promise<any> {
+        return this.call("alert", [options]);
+    }
+
+    confirm(options?: any): Promise<boolean> {
+        return this.call("confirm", [options]);
+    }
+
+    prompt(options?: any): Promise<any> {
+        return this.call("prompt", [options]);
+    }
+
+    dialog(name: string, options: any): Promise<any> {
+        return this.call("dialog", [options]);
+    }
+
+    notify(options?: any): Promise<any> {
+        return this.call("notify", [options]);
+    }
+
+    toggleLoading(value: boolean): void {
+        return this.call("loading", [value]);
+    }
+
+    chooseFile(options: ChooseFileOptions = {}): Promise<File | File[]> {
+        return this.call("chooseFile", [options]);
     }
 }

@@ -52,7 +52,7 @@ function fetchRequest(this: CrudRequest, config: RequestOptions) {
                 checkDataType: true,
                 showProgress: true,
                 notify: true,
-                ...this.$config,
+                ...this.defaultConfig,
                 ...options,
             }
 

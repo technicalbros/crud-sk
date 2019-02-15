@@ -1,7 +1,8 @@
 import * as _ from "lodash";
 import {RequestOptions} from "../RequestOptions";
-import URLSearchParams = require("url-search-params");
 import {ChooseFileOptions} from "../ChooseFileOptions";
+import {CrudRequest} from "../CrudRequest";
+import URLSearchParams = require("url-search-params");
 
 declare global {
     interface FormData {
@@ -41,19 +42,30 @@ URLSearchParams.prototype.merge = function (data: Object) {
     return this;
 }
 
-export function fetchRequest($config: RequestOptions): RequestOptions {
+export function fetchRequest(this: CrudRequest, $config: RequestOptions): RequestOptions {
+
     $config.callbacks.sendRequest = function (options: RequestOptions) {
         return new Promise((resolve, reject) => {
+
             const config = {
-                checkDataType: true,
-                notify: true,
-                ...this.$config,
+                ...this.defaultConfig,
                 ...options,
             }
 
-            const {data, callbacks, method = "get", baseUrl = '', url, redirectTo, showProgress = true, prefix = "", suffix = "", extension = "", checkDataType} = config;
-            const reloadPage = config.reload;
-            const {loading, reload, redirect, checkSuccess, notify} = callbacks;
+            const {
+                data,
+                url,
+                method = "get",
+                baseUrl = "",
+                prefix = "",
+                suffix = "",
+                extension = "",
+                redirectTo = false,
+                showProgress = true,
+                checkDataType = true,
+                notify = true,
+                reload: reloadPage = false
+            } = config;
 
             const successCallback = responseText => {
                 let response;
@@ -62,38 +74,34 @@ export function fetchRequest($config: RequestOptions): RequestOptions {
                 } catch (e) {
                     response = responseText;
                 }
-                // @ts-ignore
-                showProgress && loading && loading(false);
-                if (method.toLowerCase() === 'get' || !checkSuccess) {
+
+                showProgress && this.toggleLoading(false);
+
+                if (method.toLowerCase() === 'get') {
                     resolve(response);
-                } else if (checkSuccess) {
-                    if (checkDataType && checkSuccess(response)) {
-                        resolve(response);
-                        // @ts-ignore
-                        (redirectTo && redirect && redirect(redirectTo, response)) || (reloadPage && reload && reload());
-                    } else if (!checkDataType) {
+                } else {
+
+                    if (!checkDataType || this.call("checkDataType", [data])) {
                         resolve(response);
                     } else {
                         reject(response);
                     }
-                    const notification: any = {
+
+                    notify && this.notify({
                         type: response.type,
                         message: response.message
-                    }
-                    // @ts-ignore
-                    config.notify && notify && notify(notification);
+                    });
                 }
             }
 
             const errorCallback = (error) => {
-                // @ts-ignore
-                showProgress && loading && loading(false);
-                const notification: any = {
-                    type: "error"
-                }
-                notification.message = `${error.status}: ${error.statusText}`;
-                // @ts-ignore
-                config.notify && notify && notify(notification);
+                showProgress && this.toggleLoading(false);
+
+                notify && this.notify({
+                    type: "error",
+                    message: `${error.status}: ${error.statusText}`
+                });
+
                 reject(error)
             }
 
@@ -107,8 +115,7 @@ export function fetchRequest($config: RequestOptions): RequestOptions {
             let fullUrl = baseUrl + prefix + url + suffix + extension;
 
             if (method.toLowerCase() === 'post' && !(data instanceof FormData)) {
-                const formData = new FormData().merge(data);
-                ajaxOptions.body = formData;
+                ajaxOptions.body = new FormData().merge(data);
             }
 
             if (ajaxOptions.body instanceof FormData) {
@@ -118,8 +125,7 @@ export function fetchRequest($config: RequestOptions): RequestOptions {
                 fullUrl += "?" + params;
             }
 
-            // @ts-ignore
-            showProgress && loading && loading(true);
+            showProgress && this.toggleLoading(true);
 
             fetch(fullUrl, ajaxOptions).then(response => {
                 return new Promise((resolve, reject) => {
@@ -129,7 +135,14 @@ export function fetchRequest($config: RequestOptions): RequestOptions {
                         reject(response);
                     }
                 })
-            }).then(successCallback, errorCallback)
+            }).then(successCallback, errorCallback).then(data => {
+                if (redirectTo) {
+                    this.redirect(redirectTo);
+                } else if (reloadPage) {
+                    this.reload();
+                }
+                return data;
+            })
         })
     }
     return $config;

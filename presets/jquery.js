@@ -42,10 +42,8 @@ function ajaxRequest(config) {
     var _this = this;
     var callbacks = config.callbacks;
     callbacks.sendRequest = function (options) {
-        var config = __assign({ checkDataType: true, showProgress: true, notify: true }, _this.$config, options);
-        var data = config.data, callbacks = config.callbacks, _a = config.method, method = _a === void 0 ? "get" : _a, baseUrl = config.baseUrl, url = config.url, redirectTo = config.redirectTo, showProgress = config.showProgress, _b = config.prefix, prefix = _b === void 0 ? "" : _b, _c = config.suffix, suffix = _c === void 0 ? "" : _c, _d = config.extension, extension = _d === void 0 ? "" : _d, checkDataType = config.checkDataType, notify = config.notify;
-        var reloadPage = config.reload;
-        var loading = callbacks.loading, reload = callbacks.reload, redirect = callbacks.redirect, checkSuccess = callbacks.checkSuccess, notifyCallback = callbacks.notify;
+        var config = __assign({}, _this.defaultConfig, options);
+        var data = config.data, url = config.url, _a = config.method, method = _a === void 0 ? "get" : _a, _b = config.baseUrl, baseUrl = _b === void 0 ? "" : _b, _c = config.prefix, prefix = _c === void 0 ? "" : _c, _d = config.suffix, suffix = _d === void 0 ? "" : _d, _e = config.extension, extension = _e === void 0 ? "" : _e, _f = config.redirectTo, redirectTo = _f === void 0 ? false : _f, _g = config.showProgress, showProgress = _g === void 0 ? true : _g, _h = config.checkDataType, checkDataType = _h === void 0 ? true : _h, _j = config.notify, notify = _j === void 0 ? true : _j, _k = config.reload, reloadPage = _k === void 0 ? false : _k;
         return new Promise(function (resolve, reject) {
             var ajaxOptions = __assign({}, config.ajaxOptions, { success: function (responseText) {
                     var response;
@@ -60,7 +58,7 @@ function ajaxRequest(config) {
                         resolve(response);
                     }
                     else {
-                        if (!checkDataType || (checkDataType && checkSuccess(response))) {
+                        if (!checkDataType || _this.call("checkDataType", [data])) {
                             resolve(response);
                         }
                         else {
@@ -93,13 +91,13 @@ function ajaxRequest(config) {
                 ajaxOptions.processData = false;
                 ajaxOptions.contentType = false;
             }
-            _this.toggleLoading(true);
+            showProgress && _this.toggleLoading(true);
             jquery_1.default.ajax(ajaxOptions);
         }).then(function (data) {
-            if (redirectTo && redirect) {
+            if (redirectTo) {
                 _this.redirect(redirectTo);
             }
-            else if (reloadPage && reload) {
+            else if (reloadPage) {
                 _this.reload();
             }
             return data;

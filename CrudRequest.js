@@ -13,71 +13,79 @@ var __assign = (this && this.__assign) || function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var CrudRequest = /** @class */ (function () {
     function CrudRequest() {
-        this.$config = {
+        var _this = this;
+        this.defaultConfig = {
             baseUrl: "",
             callbacks: {
-                notify: function (data) { return new Promise(function (resolve, reject) {
-                    alert(data.message);
-                }); },
-                checkSuccess: function (data) {
-                    if (data.type === 'success') {
-                        return true;
-                    }
-                    else {
-                        return false;
-                    }
-                }
+                checkSuccess: function (_a) {
+                    var type = (_a === void 0 ? {} : _a).type;
+                    return type === 'success';
+                },
+                createRequest: function (url, data, options) { return _this.send(__assign({ method: "post", prefix: "create/" }, options, { url: url, data: data })); },
+                updateRequest: function (url, data, options) { return _this.send(__assign({ method: "post", prefix: "update/" }, options, { url: url, data: data })); },
+                deleteRequest: function (url, data, options) { return _this.send(__assign({ method: "post", prefix: "delete/" }, options, { url: url, data: data })); },
+                retrieveRequest: function (url, data, options) { return _this.send(__assign({ method: "get", prefix: "retrieve/", checkDataType: false, notify: false }, options, { url: url, data: data })); }
             }
         };
     }
+    CrudRequest.prototype.call = function (callbackName, args) {
+        if (args === void 0) { args = []; }
+        var callback = this.defaultConfig.callbacks[callbackName];
+        if (callback) {
+            return callback.apply(this, args);
+        }
+        else {
+            console.warn("No callback defined for '" + callbackName + "'");
+        }
+    };
     CrudRequest.prototype.config = function (callback) {
-        var config = __assign({}, this.$config);
+        var config = __assign({}, this.defaultConfig);
         callback.apply(this, [config]);
-        this.$config = config;
+        this.defaultConfig = config;
         return this;
     };
     CrudRequest.prototype.send = function (options) {
-        return this.$config.callbacks.sendRequest.apply(this, [options]);
+        return this.call('sendRequest', [options]);
     };
     CrudRequest.prototype.create = function (url, data, options) {
-        return this.send(__assign({ method: "post", prefix: "create/" }, options, { url: url, data: data }));
-    };
-    CrudRequest.prototype.update = function (url, data, options) {
-        return this.send(__assign({ method: "post", prefix: "update/" }, options, { url: url, data: data }));
-    };
-    CrudRequest.prototype.delete = function (url, data, options) {
-        return this.send(__assign({ method: "post", prefix: "delete/" }, options, { url: url, data: data }));
+        return this.call("create", [url, data, options]);
     };
     CrudRequest.prototype.retrieve = function (url, data, options) {
-        return this.send(__assign({ method: "get", prefix: "retrieve/", checkDataType: false, notify: false }, options, { url: url, data: data }));
+        return this.call("retrieve", [url, data, options]);
+    };
+    CrudRequest.prototype.update = function (url, data, options) {
+        return this.call("update", [url, data, options]);
+    };
+    CrudRequest.prototype.delete = function (url, data, options) {
+        return this.call("delete", [url, data, options]);
     };
     CrudRequest.prototype.redirect = function (to, options) {
-        this.$config.callbacks.redirect(to, options);
+        this.call("redirect", [to, options]);
+    };
+    CrudRequest.prototype.reload = function () {
+        this.call("confirm");
     };
     CrudRequest.prototype.alert = function (options) {
-        return this.$config.callbacks.alert.apply(this, [options]);
+        return this.call("alert", [options]);
     };
     CrudRequest.prototype.confirm = function (options) {
-        return this.$config.callbacks.confirm.apply(this, [options]);
+        return this.call("confirm", [options]);
     };
     CrudRequest.prototype.prompt = function (options) {
-        return this.$config.callbacks.prompt.apply(this, [options]);
+        return this.call("prompt", [options]);
     };
     CrudRequest.prototype.dialog = function (name, options) {
-        return this.$config.callbacks.dialog.apply(this, [name, options]);
+        return this.call("dialog", [options]);
     };
     CrudRequest.prototype.notify = function (options) {
-        return this.$config.callbacks.notify.apply(this, [options]);
+        return this.call("notify", [options]);
     };
     CrudRequest.prototype.toggleLoading = function (value) {
-        this.$config.callbacks.loading.apply(this, [value]);
+        return this.call("loading", [value]);
     };
     CrudRequest.prototype.chooseFile = function (options) {
         if (options === void 0) { options = {}; }
-        return this.$config.callbacks.chooseFile.apply(this, [options]);
-    };
-    CrudRequest.prototype.reload = function () {
-        this.$config.callbacks.reload.apply(this);
+        return this.call("chooseFile", [options]);
     };
     return CrudRequest;
 }());
