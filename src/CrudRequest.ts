@@ -62,19 +62,19 @@ export class CrudRequest {
     }
 
     create(url: string, data?: any, options?: RequestOptions): Promise<any> {
-        return this.call("create", [url, data, options]);
+        return this.call("createRequest", [url, data, options]);
     }
 
     retrieve(url: string, data?: any, options?: RequestOptions): Promise<any> {
-        return this.call("retrieve", [url, data, options]);
+        return this.call("retrieveRequest", [url, data, options]);
     }
 
     update(url: string, data?: any, options?: RequestOptions): Promise<any> {
-        return this.call("update", [url, data, options]);
+        return this.call("updateRequest", [url, data, options]);
     }
 
     delete(url: string, data?: any, options?: RequestOptions): Promise<any> {
-        return this.call("delete", [url, data, options]);
+        return this.call("deleteRequest", [url, data, options]);
     }
 
     redirect(to: any, options?: any): void {

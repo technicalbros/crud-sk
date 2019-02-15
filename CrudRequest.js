@@ -47,16 +47,16 @@ var CrudRequest = /** @class */ (function () {
         return this.call('sendRequest', [options]);
     };
     CrudRequest.prototype.create = function (url, data, options) {
-        return this.call("create", [url, data, options]);
+        return this.call("createRequest", [url, data, options]);
     };
     CrudRequest.prototype.retrieve = function (url, data, options) {
-        return this.call("retrieve", [url, data, options]);
+        return this.call("retrieveRequest", [url, data, options]);
     };
     CrudRequest.prototype.update = function (url, data, options) {
-        return this.call("update", [url, data, options]);
+        return this.call("updateRequest", [url, data, options]);
     };
     CrudRequest.prototype.delete = function (url, data, options) {
-        return this.call("delete", [url, data, options]);
+        return this.call("deleteRequest", [url, data, options]);
     };
     CrudRequest.prototype.redirect = function (to, options) {
         this.call("redirect", [to, options]);
