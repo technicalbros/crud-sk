@@ -1,5 +1,5 @@
 import * as _ from "lodash";
-import {CrudRequest, RequestOptions} from "../src";
+import {CrudRequest, RequestOptions} from "../index";
 import URLSearchParams = require("url-search-params");
 
 declare global {

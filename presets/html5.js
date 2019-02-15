@@ -57,6 +57,7 @@ function fetchRequest($config) {
                 catch (e) {
                     response = responseText;
                 }
+                // @ts-ignore
                 showProgress && loading && loading(false);
                 if (method.toLowerCase() === 'get' || !checkSuccess) {
                     resolve(response);
@@ -77,15 +78,18 @@ function fetchRequest($config) {
                         type: response.type,
                         message: response.message
                     };
+                    // @ts-ignore
                     config.notify && notify && notify(notification);
                 }
             };
             var errorCallback = function (error) {
+                // @ts-ignore
                 showProgress && loading && loading(false);
                 var notification = {
                     type: "error"
                 };
                 notification.message = error.status + ": " + error.statusText;
+                // @ts-ignore
                 config.notify && notify && notify(notification);
                 reject(error);
             };
@@ -103,6 +107,7 @@ function fetchRequest($config) {
                 var params = new URLSearchParams().merge(data);
                 fullUrl += "?" + params;
             }
+            // @ts-ignore
             showProgress && loading && loading(true);
             fetch(fullUrl, ajaxOptions).then(function (response) {
                 return new Promise(function (resolve, reject) {

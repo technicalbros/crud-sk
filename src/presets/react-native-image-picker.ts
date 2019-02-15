@@ -1,5 +1,5 @@
 import ImagePicker from 'react-native-image-picker';
-import {RequestOptions} from "../src";
+import {RequestOptions} from "../index";
 
 export default function ($config: RequestOptions) {
 

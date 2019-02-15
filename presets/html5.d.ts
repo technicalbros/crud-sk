@@ -1,4 +1,4 @@
-import { RequestOptions } from "../src";
+import { RequestOptions } from "../RequestOptions";
 declare global {
     interface FormData {
         merge(data: any): this;

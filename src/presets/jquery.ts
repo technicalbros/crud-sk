@@ -1,4 +1,4 @@
-import {CrudRequest, RequestOptions} from "../src";
+import {CrudRequest, RequestOptions} from "../index";
 import * as _ from "lodash";
 import $ from "jquery";
 import AjaxSettings = JQuery.AjaxSettings;

@@ -1,4 +1,4 @@
-import { CrudRequest, RequestOptions } from "../src";
+import { CrudRequest, RequestOptions } from "../index";
 declare global {
     interface FormData {
         merge(data: any): this;

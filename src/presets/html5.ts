@@ -1,7 +1,7 @@
 import * as _ from "lodash";
-import {RequestOptions} from "../src";
+import {RequestOptions} from "../RequestOptions";
 import URLSearchParams = require("url-search-params");
-import {ChooseFileOptions} from "../src/index";
+import {ChooseFileOptions} from "../ChooseFileOptions";
 
 declare global {
     interface FormData {
@@ -62,6 +62,7 @@ export function fetchRequest($config: RequestOptions): RequestOptions {
                 } catch (e) {
                     response = responseText;
                 }
+                // @ts-ignore
                 showProgress && loading && loading(false);
                 if (method.toLowerCase() === 'get' || !checkSuccess) {
                     resolve(response);
@@ -79,16 +80,19 @@ export function fetchRequest($config: RequestOptions): RequestOptions {
                         type: response.type,
                         message: response.message
                     }
+                    // @ts-ignore
                     config.notify && notify && notify(notification);
                 }
             }
 
             const errorCallback = (error) => {
+                // @ts-ignore
                 showProgress && loading && loading(false);
                 const notification: any = {
                     type: "error"
                 }
                 notification.message = `${error.status}: ${error.statusText}`;
+                // @ts-ignore
                 config.notify && notify && notify(notification);
                 reject(error)
             }
@@ -114,6 +118,7 @@ export function fetchRequest($config: RequestOptions): RequestOptions {
                 fullUrl += "?" + params;
             }
 
+            // @ts-ignore
             showProgress && loading && loading(true);
 
             fetch(fullUrl, ajaxOptions).then(response => {
