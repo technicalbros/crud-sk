@@ -69,7 +69,7 @@ function ajaxRequest(config) {
                         resolve(response);
                     }
                     else {
-                        if (!checkDataType || _this.call("checkDataType", [data])) {
+                        if (!checkDataType || _this.call("checkSuccess", [data])) {
                             resolve(response);
                         }
                         else {
