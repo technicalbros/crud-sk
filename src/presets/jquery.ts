@@ -75,7 +75,7 @@ export function ajaxRequest(this: CrudRequest, config: RequestOptions) {
                         resolve(response);
                     } else {
 
-                        if (!checkDataType || this.call("checkSuccess", [data])) {
+                        if (!checkDataType || this.call("checkSuccess", [response])) {
                             resolve(response);
                         } else {
                             reject(response);

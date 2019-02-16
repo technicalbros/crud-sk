@@ -91,7 +91,7 @@ export function fetchRequest(this: CrudRequest, $config: RequestOptions): Reques
                     resolve(response);
                 } else {
 
-                    if (!checkDataType || this.call("checkSuccess", [data])) {
+                    if (!checkDataType || this.call("checkSuccess", [response])) {
                         resolve(response);
                     } else {
                         reject(response);
