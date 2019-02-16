@@ -49,29 +49,25 @@ function fetchRequest(this: CrudRequest, config: RequestOptions) {
     callbacks.sendRequest = function (options: RequestOptions) {
         return new Promise((resolve, reject) => {
             const config = {
-                checkDataType: true,
-                showProgress: true,
-                notify: true,
                 ...this.defaultConfig,
                 ...options,
             }
 
             const {
                 data,
-                callbacks,
-                method = "get",
-                baseUrl,
                 url,
-                redirectTo,
-                showProgress,
+                method = "get",
+                baseUrl = "",
                 prefix = "",
                 suffix = "",
                 extension = "",
-                checkDataType,
+                redirectTo = false,
+                showProgress = true,
+                checkDataType = true,
+                notify = true,
                 ajaxOptions,
-                reload: reloadPage
+                reload: reloadPage = false
             } = config;
-            const {loading, reload, redirect, checkSuccess, notify} = callbacks;
 
 
             let requestOptions: RequestInit = {
@@ -85,9 +81,7 @@ function fetchRequest(this: CrudRequest, config: RequestOptions) {
             if (!_.isEmpty(data)) {
                 if (method.toLowerCase() === 'post') {
                     if (!(data instanceof FormData)) {
-                        console.log('formData', data)
-                        const formData = new FormData().merge(data);
-                        requestOptions.body = formData;
+                        requestOptions.body = new FormData().merge(data);
                     }
                 } else {
                     const params = new URLSearchParams().merge(data);
@@ -103,41 +97,48 @@ function fetchRequest(this: CrudRequest, config: RequestOptions) {
 
             this.toggleLoading(true);
 
-            fetch(_url, requestOptions).then(data => {
-                data.json().then(response => {
-
-                    showProgress && loading && this.toggleLoading(false);
-
-                    if (checkSuccess) {
-                        if (checkDataType && checkSuccess(response)) {
-                            resolve(response);
-                            // @ts-ignore
-                            redirectTo && this.redirect(redirectTo)
-                            reloadPage && this.reload();
-                        } else if (!checkDataType) {
-                            resolve(response);
-                        } else {
-                            reject(response);
-                        }
-                        this.notify({
-                            type: response.type,
-                            message: response.message
-                        });
+            fetch(_url, requestOptions).then(response => {
+                return new Promise((resolve, reject) => {
+                    if (response.status === 200) {
+                        resolve(response.text())
                     } else {
-                        resolve(response);
+                        reject(response);
                     }
-                }).catch(e => {
+                })
+            }).then((responseText: string) => {
+                let response;
+                try {
+                    response = JSON.parse(responseText);
+                } catch (e) {
+                    response = responseText;
+                }
 
-                    showProgress && loading && this.toggleLoading(false);
+                showProgress && this.toggleLoading(false);
+
+                if (method.toLowerCase() === 'get') {
+                    resolve(response);
+                } else {
+
+                    if (!checkDataType || this.call("checkSuccess", [data])) {
+                        resolve(response);
+                    } else {
+                        reject(response);
+                    }
 
                     notify && this.notify({
-                        type: "error",
-                        message: "Something went wrong"
+                        type: response.type,
+                        message: response.message
                     });
-                })
+                }
+
             }, (error) => {
 
-                showProgress && loading && this.toggleLoading(false);
+                showProgress && this.toggleLoading(false);
+
+                notify && this.notify({
+                    type: "error",
+                    message: `Something went wrong`
+                });
 
                 reject(error)
             })
