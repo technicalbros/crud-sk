@@ -163,3 +163,18 @@ function chooseFile(config) {
     return config;
 }
 exports.chooseFile = chooseFile;
+function redirect(config) {
+    var callbacks = config.callbacks;
+    callbacks.redirect = function (to) {
+        window.location.href = to;
+    };
+    callbacks.reload = function () { return window.location.reload(); };
+    return config;
+}
+exports.redirect = redirect;
+function reload(config) {
+    var callbacks = config.callbacks;
+    callbacks.reload = function () { return window.location.reload(); };
+    return config;
+}
+exports.reload = reload;

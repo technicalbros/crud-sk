@@ -13,3 +13,5 @@ declare global {
 }
 export declare function fetchRequest(this: CrudRequest, $config: RequestOptions): RequestOptions;
 export declare function chooseFile(config: RequestOptions): RequestOptions;
+export declare function redirect(config: RequestOptions): RequestOptions;
+export declare function reload(config: RequestOptions): RequestOptions;

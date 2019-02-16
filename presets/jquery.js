@@ -41,17 +41,6 @@ FormData.prototype.merge = function (data) {
 function ajaxRequest(config) {
     var _this = this;
     var callbacks = config.callbacks;
-    callbacks.redirect = function (to) {
-        window.location.href = to;
-    };
-    callbacks.reload = function () { return window.location.reload(); };
-    callbacks.notify = function (_a) {
-        var message = _a.message, type = _a.type;
-        return _this.alert({
-            title: type === 'success' ? "Success" : "Error",
-            textContent: message
-        });
-    };
     callbacks.sendRequest = function (options) {
         var config = __assign({}, _this.defaultConfig, options);
         var data = config.data, url = config.url, _a = config.method, method = _a === void 0 ? "get" : _a, _b = config.baseUrl, baseUrl = _b === void 0 ? "" : _b, _c = config.prefix, prefix = _c === void 0 ? "" : _c, _d = config.suffix, suffix = _d === void 0 ? "" : _d, _e = config.extension, extension = _e === void 0 ? "" : _e, _f = config.redirectTo, redirectTo = _f === void 0 ? false : _f, _g = config.showProgress, showProgress = _g === void 0 ? true : _g, _h = config.checkDataType, checkDataType = _h === void 0 ? true : _h, _j = config.notify, notify = _j === void 0 ? true : _j, _k = config.reload, reloadPage = _k === void 0 ? false : _k;

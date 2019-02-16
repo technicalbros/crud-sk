@@ -163,7 +163,7 @@ export function chooseFile(config: RequestOptions): RequestOptions {
     const {callbacks} = config;
 
     callbacks.chooseFile = ({multiple, accept}: ChooseFileOptions = {}): Promise<File | File[]> => {
-        
+
         let input: HTMLInputElement = document.querySelector('.sk-file-input');
 
         if (!input) {
@@ -199,3 +199,27 @@ export function chooseFile(config: RequestOptions): RequestOptions {
 
     return config;
 }
+
+
+export function redirect(config: RequestOptions): RequestOptions {
+
+    const {callbacks} = config;
+
+    callbacks.redirect = (to: string) => {
+        window.location.href = to
+    }
+
+    callbacks.reload = () => window.location.reload()
+
+    return config;
+}
+
+export function reload(config: RequestOptions): RequestOptions {
+
+    const {callbacks} = config;
+
+    callbacks.reload = () => window.location.reload()
+
+    return config;
+}
+
