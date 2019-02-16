@@ -1,5 +1,5 @@
 import {Toast} from "native-base";
-import {RequestOptions} from "../src";
+import {RequestOptions} from "../index";
 
 export function notify($config: RequestOptions) {
 

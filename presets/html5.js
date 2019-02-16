@@ -42,13 +42,21 @@ URLSearchParams.prototype.merge = function (data) {
     return this;
 };
 function fetchRequest($config) {
+    $config.callbacks.redirect = function (to) {
+        window.location.href = to;
+    };
+    $config.callbacks.reload = function () { return window.location.reload(); };
+    $config.callbacks.alert = function (_a) {
+        var title = _a.title, textContent = _a.textContent;
+        return new Promise(function () {
+            alert(title + " : " + textContent);
+        });
+    };
     $config.callbacks.sendRequest = function (options) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            var config = __assign({ checkDataType: true, notify: true }, _this.$config, options);
-            var data = config.data, callbacks = config.callbacks, _a = config.method, method = _a === void 0 ? "get" : _a, _b = config.baseUrl, baseUrl = _b === void 0 ? '' : _b, url = config.url, redirectTo = config.redirectTo, _c = config.showProgress, showProgress = _c === void 0 ? true : _c, _d = config.prefix, prefix = _d === void 0 ? "" : _d, _e = config.suffix, suffix = _e === void 0 ? "" : _e, _f = config.extension, extension = _f === void 0 ? "" : _f, checkDataType = config.checkDataType;
-            var reloadPage = config.reload;
-            var loading = callbacks.loading, reload = callbacks.reload, redirect = callbacks.redirect, checkSuccess = callbacks.checkSuccess, notify = callbacks.notify;
+            var config = __assign({}, _this.defaultConfig, options);
+            var data = config.data, url = config.url, _a = config.method, method = _a === void 0 ? "get" : _a, _b = config.baseUrl, baseUrl = _b === void 0 ? "" : _b, _c = config.prefix, prefix = _c === void 0 ? "" : _c, _d = config.suffix, suffix = _d === void 0 ? "" : _d, _e = config.extension, extension = _e === void 0 ? "" : _e, _f = config.redirectTo, redirectTo = _f === void 0 ? false : _f, _g = config.showProgress, showProgress = _g === void 0 ? true : _g, _h = config.checkDataType, checkDataType = _h === void 0 ? true : _h, _j = config.notify, notify = _j === void 0 ? true : _j, _k = config.reload, reloadPage = _k === void 0 ? false : _k;
             var successCallback = function (responseText) {
                 var response;
                 try {
@@ -57,44 +65,36 @@ function fetchRequest($config) {
                 catch (e) {
                     response = responseText;
                 }
-                showProgress && loading && loading(false);
-                if (method.toLowerCase() === 'get' || !checkSuccess) {
+                showProgress && _this.toggleLoading(false);
+                if (method.toLowerCase() === 'get') {
                     resolve(response);
                 }
-                else if (checkSuccess) {
-                    if (checkDataType && checkSuccess(response)) {
-                        resolve(response);
-                        // @ts-ignore
-                        (redirectTo && redirect && redirect(redirectTo, response)) || (reloadPage && reload && reload());
-                    }
-                    else if (!checkDataType) {
+                else {
+                    if (!checkDataType || _this.call("checkDataType", [data])) {
                         resolve(response);
                     }
                     else {
                         reject(response);
                     }
-                    var notification = {
+                    notify && _this.notify({
                         type: response.type,
                         message: response.message
-                    };
-                    config.notify && notify && notify(notification);
+                    });
                 }
             };
             var errorCallback = function (error) {
-                showProgress && loading && loading(false);
-                var notification = {
-                    type: "error"
-                };
-                notification.message = error.status + ": " + error.statusText;
-                config.notify && notify && notify(notification);
+                showProgress && _this.toggleLoading(false);
+                notify && _this.notify({
+                    type: "error",
+                    message: error.status + ": " + error.statusText
+                });
                 reject(error);
             };
             var ajaxOptions = __assign({ headers: {}, credentials: "include" }, config.ajaxOptions);
             ajaxOptions.method = method;
             var fullUrl = baseUrl + prefix + url + suffix + extension;
             if (method.toLowerCase() === 'post' && !(data instanceof FormData)) {
-                var formData = new FormData().merge(data);
-                ajaxOptions.body = formData;
+                ajaxOptions.body = new FormData().merge(data);
             }
             if (ajaxOptions.body instanceof FormData) {
                 ajaxOptions.method = "post";
@@ -103,7 +103,7 @@ function fetchRequest($config) {
                 var params = new URLSearchParams().merge(data);
                 fullUrl += "?" + params;
             }
-            showProgress && loading && loading(true);
+            showProgress && _this.toggleLoading(true);
             fetch(fullUrl, ajaxOptions).then(function (response) {
                 return new Promise(function (resolve, reject) {
                     if (response.status === 200) {
@@ -113,7 +113,15 @@ function fetchRequest($config) {
                         reject(response);
                     }
                 });
-            }).then(successCallback, errorCallback);
+            }).then(successCallback, errorCallback).then(function (data) {
+                if (redirectTo) {
+                    _this.redirect(redirectTo);
+                }
+                else if (reloadPage) {
+                    _this.reload();
+                }
+                return data;
+            });
         });
     };
     return $config;
@@ -121,8 +129,8 @@ function fetchRequest($config) {
 exports.fetchRequest = fetchRequest;
 function chooseFile(config) {
     var callbacks = config.callbacks;
-    callbacks.chooseFile = function (options) {
-        var multiple = options.multiple, accept = options.accept;
+    callbacks.chooseFile = function (_a) {
+        var _b = _a === void 0 ? {} : _a, multiple = _b.multiple, accept = _b.accept;
         var input = document.querySelector('.sk-file-input');
         if (!input) {
             input = document.createElement('input');

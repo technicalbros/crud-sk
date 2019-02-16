@@ -1,4 +1,4 @@
-import { RequestOptions } from "../src";
+import { CrudRequest, RequestOptions } from "../index";
 declare global {
     interface FormData {
         merge(data: any): this;
@@ -7,4 +7,5 @@ declare global {
         url: string;
     }
 }
-export default function (config: RequestOptions): RequestOptions;
+export declare function ajaxRequest(this: CrudRequest, config: RequestOptions): RequestOptions;
+export default ajaxRequest;

@@ -30,7 +30,7 @@ var mergeData = function (formData, data, key) {
             mergeData(formData, value, name);
         });
     }
-    else if (key) {
+    else if (key && data !== undefined) {
         formData.append(key, data || '');
     }
 };
@@ -41,67 +41,79 @@ FormData.prototype.merge = function (data) {
 function ajaxRequest(config) {
     var _this = this;
     var callbacks = config.callbacks;
-    callbacks.sendRequest = function (options) { return new Promise(function (resolve, reject) {
-        var config = __assign({ checkDataType: true, notify: true }, _this.$config, options);
-        var data = config.data, callbacks = config.callbacks, _a = config.method, method = _a === void 0 ? "get" : _a, baseUrl = config.baseUrl, url = config.url, redirectTo = config.redirectTo, showProgress = config.showProgress, _b = config.prefix, prefix = _b === void 0 ? "" : _b, _c = config.suffix, suffix = _c === void 0 ? "" : _c, _d = config.extension, extension = _d === void 0 ? "" : _d, checkDataType = config.checkDataType;
-        var reloadPage = config.reload;
-        var loading = callbacks.loading, reload = callbacks.reload, redirect = callbacks.redirect, checkSuccess = callbacks.checkSuccess, notify = callbacks.notify;
-        var ajaxOptions = __assign({}, config.ajaxOptions, { success: function (responseText) {
-                var response;
-                try {
-                    response = JSON.parse(responseText);
-                }
-                catch (e) {
-                    response = responseText;
-                }
-                showProgress && loading && loading(false);
-                if (method.toLowerCase() === 'get' || !checkSuccess) {
-                    resolve(response);
-                }
-                else if (checkSuccess) {
-                    if (checkDataType && checkSuccess(response)) {
-                        resolve(response);
-                        // @ts-ignore
-                        (redirectTo && redirect && redirect(redirectTo, response)) || (reloadPage && reload && reload());
+    callbacks.redirect = function (to) {
+        window.location.href = to;
+    };
+    callbacks.reload = function () { return window.location.reload(); };
+    callbacks.notify = function (_a) {
+        var message = _a.message, type = _a.type;
+        return _this.alert({
+            title: type === 'success' ? "Success" : "Error",
+            textContent: message
+        });
+    };
+    callbacks.sendRequest = function (options) {
+        var config = __assign({}, _this.defaultConfig, options);
+        var data = config.data, url = config.url, _a = config.method, method = _a === void 0 ? "get" : _a, _b = config.baseUrl, baseUrl = _b === void 0 ? "" : _b, _c = config.prefix, prefix = _c === void 0 ? "" : _c, _d = config.suffix, suffix = _d === void 0 ? "" : _d, _e = config.extension, extension = _e === void 0 ? "" : _e, _f = config.redirectTo, redirectTo = _f === void 0 ? false : _f, _g = config.showProgress, showProgress = _g === void 0 ? true : _g, _h = config.checkDataType, checkDataType = _h === void 0 ? true : _h, _j = config.notify, notify = _j === void 0 ? true : _j, _k = config.reload, reloadPage = _k === void 0 ? false : _k;
+        return new Promise(function (resolve, reject) {
+            var ajaxOptions = __assign({}, config.ajaxOptions, { success: function (responseText) {
+                    var response;
+                    try {
+                        response = JSON.parse(responseText);
                     }
-                    else if (!checkDataType) {
+                    catch (e) {
+                        response = responseText;
+                    }
+                    showProgress && _this.toggleLoading(false);
+                    if (method.toLowerCase() === 'get') {
                         resolve(response);
                     }
                     else {
-                        reject(response);
+                        if (!checkDataType || _this.call("checkDataType", [data])) {
+                            resolve(response);
+                        }
+                        else {
+                            reject(response);
+                        }
+                        notify && _this.notify({
+                            type: response.type,
+                            message: response.message
+                        });
                     }
-                    var notification = {
-                        type: response.type,
-                        message: response.message
-                    };
-                    config.notify && notify && notify(notification);
-                }
-            }, error: function (error) {
-                showProgress && loading && loading(false);
-                var notification = {
-                    type: "error"
-                };
-                notification.message = error.status + ": " + error.statusText;
-                config.notify && notify && notify(notification);
-                reject(error);
-            } });
-        ajaxOptions.type = method;
-        ajaxOptions.url = baseUrl + prefix + url + suffix + extension;
-        if (method.toLowerCase() === 'post' && !(data instanceof FormData)) {
-            ajaxOptions.data = new FormData().merge(data);
-        }
-        else {
-            ajaxOptions.data = data;
-        }
-        if (ajaxOptions.data instanceof FormData) {
-            ajaxOptions.type = "post";
-            ajaxOptions.cache = false;
-            ajaxOptions.processData = false;
-            ajaxOptions.contentType = false;
-        }
-        showProgress && loading && loading(true);
-        jquery_1.default.ajax(ajaxOptions);
-    }); };
+                }, error: function (error) {
+                    showProgress && _this.toggleLoading(false);
+                    notify && _this.notify({
+                        type: "error",
+                        message: error.status + ": " + error.statusText
+                    });
+                    reject(error);
+                } });
+            ajaxOptions.type = method;
+            ajaxOptions.url = baseUrl + prefix + url + suffix + extension;
+            if (method.toLowerCase() === 'post' && !(data instanceof FormData)) {
+                ajaxOptions.data = new FormData().merge(data);
+            }
+            else {
+                ajaxOptions.data = data;
+            }
+            if (ajaxOptions.data instanceof FormData) {
+                ajaxOptions.type = "post";
+                ajaxOptions.cache = false;
+                ajaxOptions.processData = false;
+                ajaxOptions.contentType = false;
+            }
+            showProgress && _this.toggleLoading(true);
+            jquery_1.default.ajax(ajaxOptions);
+        }).then(function (data) {
+            if (redirectTo) {
+                _this.redirect(redirectTo);
+            }
+            else if (reloadPage) {
+                _this.reload();
+            }
+            return data;
+        });
+    };
     return config;
 }
 exports.ajaxRequest = ajaxRequest;
