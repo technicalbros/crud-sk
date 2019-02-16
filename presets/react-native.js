@@ -52,17 +52,14 @@ function fetchRequest(config) {
     callbacks.sendRequest = function (options) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            var config = __assign({ checkDataType: true, showProgress: true, notify: true }, _this.defaultConfig, options);
-            var data = config.data, callbacks = config.callbacks, _a = config.method, method = _a === void 0 ? "get" : _a, baseUrl = config.baseUrl, url = config.url, redirectTo = config.redirectTo, showProgress = config.showProgress, _b = config.prefix, prefix = _b === void 0 ? "" : _b, _c = config.suffix, suffix = _c === void 0 ? "" : _c, _d = config.extension, extension = _d === void 0 ? "" : _d, checkDataType = config.checkDataType, ajaxOptions = config.ajaxOptions, reloadPage = config.reload;
-            var loading = callbacks.loading, reload = callbacks.reload, redirect = callbacks.redirect, checkSuccess = callbacks.checkSuccess, notify = callbacks.notify;
+            var config = __assign({}, _this.defaultConfig, options);
+            var data = config.data, url = config.url, _a = config.method, method = _a === void 0 ? "get" : _a, _b = config.baseUrl, baseUrl = _b === void 0 ? "" : _b, _c = config.prefix, prefix = _c === void 0 ? "" : _c, _d = config.suffix, suffix = _d === void 0 ? "" : _d, _e = config.extension, extension = _e === void 0 ? "" : _e, _f = config.redirectTo, redirectTo = _f === void 0 ? false : _f, _g = config.showProgress, showProgress = _g === void 0 ? true : _g, _h = config.checkDataType, checkDataType = _h === void 0 ? true : _h, _j = config.notify, notify = _j === void 0 ? true : _j, ajaxOptions = config.ajaxOptions, _k = config.reload, reloadPage = _k === void 0 ? false : _k;
             var requestOptions = __assign({}, ajaxOptions, { method: method, credentials: "include" });
             var _url = baseUrl + prefix + url + suffix + extension;
             if (!_.isEmpty(data)) {
                 if (method.toLowerCase() === 'post') {
                     if (!(data instanceof FormData)) {
-                        console.log('formData', data);
-                        var formData = new FormData().merge(data);
-                        requestOptions.body = formData;
+                        requestOptions.body = new FormData().merge(data);
                     }
                 }
                 else {
@@ -76,39 +73,45 @@ function fetchRequest(config) {
                 }
             }
             _this.toggleLoading(true);
-            fetch(_url, requestOptions).then(function (data) {
-                data.json().then(function (response) {
-                    showProgress && loading && _this.toggleLoading(false);
-                    if (checkSuccess) {
-                        if (checkDataType && checkSuccess(response)) {
-                            resolve(response);
-                            // @ts-ignore
-                            redirectTo && _this.redirect(redirectTo);
-                            reloadPage && _this.reload();
-                        }
-                        else if (!checkDataType) {
-                            resolve(response);
-                        }
-                        else {
-                            reject(response);
-                        }
-                        _this.notify({
-                            type: response.type,
-                            message: response.message
-                        });
+            fetch(_url, requestOptions).then(function (response) {
+                return new Promise(function (resolve, reject) {
+                    if (response.status === 200) {
+                        resolve(response.text());
                     }
                     else {
+                        reject(response);
+                    }
+                });
+            }).then(function (responseText) {
+                var response;
+                try {
+                    response = JSON.parse(responseText);
+                }
+                catch (e) {
+                    response = responseText;
+                }
+                showProgress && _this.toggleLoading(false);
+                if (method.toLowerCase() === 'get') {
+                    resolve(response);
+                }
+                else {
+                    if (!checkDataType || _this.call("checkSuccess", [data])) {
                         resolve(response);
                     }
-                }).catch(function (e) {
-                    showProgress && loading && _this.toggleLoading(false);
+                    else {
+                        reject(response);
+                    }
                     notify && _this.notify({
-                        type: "error",
-                        message: "Something went wrong"
+                        type: response.type,
+                        message: response.message
                     });
-                });
+                }
             }, function (error) {
-                showProgress && loading && _this.toggleLoading(false);
+                showProgress && _this.toggleLoading(false);
+                notify && _this.notify({
+                    type: "error",
+                    message: "Something went wrong"
+                });
                 reject(error);
             });
         });
