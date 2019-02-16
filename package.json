@@ -1,8 +1,11 @@
 {
   "name": "@crud/core",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "main": "index.js",
   "description": "Great library for CRUD operations in Javascript",
+  "repository": {
+    "url": "https://github.com/technicalbros/crud-sk"
+  },
   "scripts": {
     "watch": "tsc --watch"
   },
