@@ -1,7 +1,7 @@
 {
   "name": "@crud/core",
-  "version": "1.0.8",
-  "main": "./src/index.js",
+  "version": "2.0.0",
+  "main": "index.js",
   "description": "Great library for CRUD operations in Javascript",
   "scripts": {
     "watch": "tsc --watch"
