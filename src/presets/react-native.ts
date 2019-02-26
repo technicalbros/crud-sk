@@ -46,7 +46,7 @@ function fetchRequest(this: CrudRequest, config: RequestOptions) {
 
     const {callbacks} = config;
 
-    callbacks.sendRequest = function (options: RequestOptions) {
+    callbacks.sendRequest = async function (options: RequestOptions) {
         return new Promise((resolve, reject) => {
             const config = {
                 ...this.defaultConfig,
@@ -61,12 +61,10 @@ function fetchRequest(this: CrudRequest, config: RequestOptions) {
                 prefix = "",
                 suffix = "",
                 extension = "",
-                redirectTo = false,
                 showProgress = true,
                 checkDataType = true,
                 notify = true,
-                ajaxOptions,
-                reload: reloadPage = false
+                ajaxOptions
             } = config;
 
 
@@ -119,7 +117,7 @@ function fetchRequest(this: CrudRequest, config: RequestOptions) {
                     resolve(response);
                 } else {
 
-                    if (!checkDataType || this.call("checkSuccess", [data])) {
+                    if (!checkDataType || this.call("checkSuccess", [response])) {
                         resolve(response);
                     } else {
                         reject(response);
