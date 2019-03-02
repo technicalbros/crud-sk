@@ -1,6 +1,6 @@
 {
   "name": "@crud/core",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "main": "index.js",
   "description": "Great library for CRUD operations in Javascript",
   "repository": {
@@ -10,8 +10,8 @@
     "watch": "tsc --watch"
   },
   "dependencies": {
-    "url-search-params": "^1.1.0",
-    "lodash": "^4.x"
+    "lodash": "^4.x",
+    "url-search-params": "^1.1.0"
   },
   "devDependencies": {
     "@types/jquery": "^3.3.22",
