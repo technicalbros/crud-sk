@@ -88,4 +88,4 @@ var CrudRequest = /** @class */ (function () {
     };
     return CrudRequest;
 }());
-exports.CrudRequest = CrudRequest;
+exports.default = CrudRequest;

@@ -1,12 +1,14 @@
-import {CrudRequest} from "./CrudRequest";
-import {ChooseFileOptions} from "./ChooseFileOptions";
+import CrudRequest from "./CrudRequest";
+import ChooseFileOptions from "./ChooseFileOptions";
 
-export interface RequestOptions {
+export default interface RequestOptions {
     baseUrl?: string,
     callbacks?: {
         loading?: (this: CrudRequest, value: boolean) => void,
         redirect?: (this: CrudRequest, to: any, data?: any) => void,
         reload?: (this: CrudRequest) => void,
+        transformParams?: (this: CrudRequest, data: any) => Promise<any>,
+        transformResponse?: (this: CrudRequest, data: any) => Promise<any>,
         checkSuccess?: (this: CrudRequest, data: any) => boolean,
         createRequest?: (this: CrudRequest, url: string, data?: any, options?: RequestOptions) => Promise<any>,
         retrieveRequest?: (this: CrudRequest, url: string, data?: any, options?: RequestOptions) => Promise<any>,

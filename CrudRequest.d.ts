@@ -1,6 +1,6 @@
-import { RequestOptions } from "./RequestOptions";
-import { ChooseFileOptions } from "./ChooseFileOptions";
-export declare class CrudRequest {
+import RequestOptions from "./RequestOptions";
+import ChooseFileOptions from "./ChooseFileOptions";
+export default class CrudRequest {
     defaultConfig: RequestOptions;
     call(callbackName: string, args?: Array<any>): any;
     config(callback: (this: CrudRequest, config: RequestOptions) => RequestOptions): this;
