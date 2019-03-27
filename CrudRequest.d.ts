@@ -1,5 +1,6 @@
 import RequestOptions from "./RequestOptions";
 import ChooseFileOptions from "./ChooseFileOptions";
+import NotifyOptions from "./NotifyOptions";
 export default class CrudRequest {
     defaultConfig: RequestOptions;
     call(callbackName: string, args?: Array<any>): any;
@@ -15,7 +16,7 @@ export default class CrudRequest {
     confirm(options?: any): Promise<boolean>;
     prompt(options?: any): Promise<any>;
     dialog(name: string, options: any): Promise<any>;
-    notify(options?: any): Promise<any>;
+    notify(options?: NotifyOptions): Promise<any>;
     toggleLoading(value: boolean): void;
     chooseFile(options?: ChooseFileOptions): Promise<File | File[]>;
 }

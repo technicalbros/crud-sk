@@ -1,5 +1,6 @@
 import RequestOptions from "./RequestOptions";
 import ChooseFileOptions from "./ChooseFileOptions";
+import NotifyOptions from "./NotifyOptions";
 
 export default class CrudRequest {
 
@@ -101,7 +102,7 @@ export default class CrudRequest {
         return this.call("dialog", [options]);
     }
 
-    notify(options?: any): Promise<any> {
+    notify(options?: NotifyOptions): Promise<any> {
         return this.call("notify", [options]);
     }
 
