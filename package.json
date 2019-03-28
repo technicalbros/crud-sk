@@ -1,6 +1,7 @@
 {
   "name": "@crud/core",
   "version": "2.1.0",
+  "license": "MIT",
   "main": "index.js",
   "description": "Great library for CRUD operations in Javascript",
   "repository": {
@@ -9,12 +10,7 @@
   "scripts": {
     "watch": "tsc --watch"
   },
-  "dependencies": {
-    "lodash": "^4.x",
-    "url-search-params": "^1.1.0"
-  },
   "devDependencies": {
-    "@types/lodash": "^4.14.117",
     "typescript": "^3.1.3"
   }
 }

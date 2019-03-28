@@ -44,8 +44,6 @@ export default class CrudRequest {
         const callback: Function = this.defaultConfig.callbacks[callbackName];
         if (callback) {
             return callback.apply(this, args)
-        } else {
-            console.warn(`No callback defined for '${callbackName}'`)
         }
     }
 
