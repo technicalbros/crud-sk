@@ -1,5 +1,4 @@
 import CrudRequest from "./CrudRequest";
-import ChooseFileOptions from "./ChooseFileOptions";
 export default interface RequestOptions {
     baseUrl?: string;
     callbacks?: {
@@ -19,7 +18,7 @@ export default interface RequestOptions {
         confirm?: (this: CrudRequest, options?: any) => Promise<any>;
         alert?: (this: CrudRequest, options?: any) => Promise<any>;
         sendRequest?: (this: CrudRequest, options?: RequestOptions) => Promise<any>;
-        chooseFile?: (this: CrudRequest, options?: ChooseFileOptions) => Promise<File | File[]>;
+        chooseFile?: (this: CrudRequest, options?: any) => Promise<any>;
     };
     prefix?: string;
     suffix?: string;

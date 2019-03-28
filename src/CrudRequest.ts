@@ -1,6 +1,4 @@
 import RequestOptions from "./RequestOptions";
-import ChooseFileOptions from "./ChooseFileOptions";
-import NotifyOptions from "./NotifyOptions";
 
 export default class CrudRequest {
 
@@ -42,7 +40,7 @@ export default class CrudRequest {
         }
     }
 
-    call(callbackName: string, args: Array<any> = []): any {
+    call(callbackName: "loading" | "redirect" | "reload" | "transformParams" | "transformResponse" | "checkSuccess" | "createRequest" | "retrieveRequest" | "updateRequest" | "deleteRequest" | "notify" | "dialog" | "prompt" | "confirm" | "alert" | "sendRequest" | "chooseFile", args: Array<any> = []): any {
         const callback: Function = this.defaultConfig.callbacks[callbackName];
         if (callback) {
             return callback.apply(this, args)
@@ -102,7 +100,7 @@ export default class CrudRequest {
         return this.call("dialog", [options]);
     }
 
-    notify(options?: NotifyOptions): Promise<any> {
+    notify(options?: any): Promise<any> {
         return this.call("notify", [options]);
     }
 
@@ -110,7 +108,7 @@ export default class CrudRequest {
         return this.call("loading", [value]);
     }
 
-    chooseFile(options: ChooseFileOptions = {}): Promise<File | File[]> {
+    async chooseFile(options: any): Promise<any> {
         return this.call("chooseFile", [options]);
     }
 }
