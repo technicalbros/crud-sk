@@ -72,9 +72,6 @@ var CrudRequest = /** @class */ (function () {
         if (callback) {
             return callback.apply(this, args);
         }
-        else {
-            console.warn("No callback defined for '" + callbackName + "'");
-        }
     };
     CrudRequest.prototype.config = function (callback) {
         var config = __assign({}, this.defaultConfig);
@@ -83,40 +80,80 @@ var CrudRequest = /** @class */ (function () {
         return this;
     };
     CrudRequest.prototype.send = function (options) {
-        return this.call('sendRequest', [options]);
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, this.call('sendRequest', [options])];
+            });
+        });
     };
     CrudRequest.prototype.create = function (url, data, options) {
-        return this.call("createRequest", [url, data, options]);
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, this.call("createRequest", [url, data, options])];
+            });
+        });
     };
     CrudRequest.prototype.retrieve = function (url, data, options) {
-        return this.call("retrieveRequest", [url, data, options]);
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, this.call("retrieveRequest", [url, data, options])];
+            });
+        });
     };
     CrudRequest.prototype.update = function (url, data, options) {
-        return this.call("updateRequest", [url, data, options]);
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, this.call("updateRequest", [url, data, options])];
+            });
+        });
     };
     CrudRequest.prototype.delete = function (url, data, options) {
-        return this.call("deleteRequest", [url, data, options]);
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, this.call("deleteRequest", [url, data, options])];
+            });
+        });
     };
     CrudRequest.prototype.redirect = function (to, options) {
         this.call("redirect", [to, options]);
     };
     CrudRequest.prototype.reload = function () {
-        this.call("confirm");
+        this.call("reload");
     };
     CrudRequest.prototype.alert = function (options) {
-        return this.call("alert", [options]);
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, this.call("alert", [options])];
+            });
+        });
     };
     CrudRequest.prototype.confirm = function (options) {
-        return this.call("confirm", [options]);
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, this.call("confirm", [options])];
+            });
+        });
     };
     CrudRequest.prototype.prompt = function (options) {
-        return this.call("prompt", [options]);
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, this.call("prompt", [options])];
+            });
+        });
     };
-    CrudRequest.prototype.dialog = function (name, options) {
-        return this.call("dialog", [options]);
+    CrudRequest.prototype.dialog = function (options) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, this.call("dialog", [options])];
+            });
+        });
     };
     CrudRequest.prototype.notify = function (options) {
-        return this.call("notify", [options]);
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, this.call("notify", [options])];
+            });
+        });
     };
     CrudRequest.prototype.toggleLoading = function (value) {
         return this.call("loading", [value]);

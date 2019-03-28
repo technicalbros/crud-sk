@@ -1,10 +1,15 @@
 import CrudRequest from "./CrudRequest";
+import AlertOptions from "./AlertOptions";
+import ChooseFileOptions from "./ChooseFileOptions";
+import ConfirmOptions from "./ConfirmOptions";
+import PromptOptions from "./PromptOptions";
+import NotifyOptions from "./NotifyOptions";
 
 export default interface RequestOptions {
     baseUrl?: string,
     callbacks?: {
         loading?: (this: CrudRequest, value: boolean) => void,
-        redirect?: (this: CrudRequest, to: any, data?: any) => void,
+        redirect?: (this: CrudRequest, to: any, options?: any) => void,
         reload?: (this: CrudRequest) => void,
         transformParams?: (this: CrudRequest, data: any) => Promise<any>,
         transformResponse?: (this: CrudRequest, data: any) => Promise<any>,
@@ -13,13 +18,13 @@ export default interface RequestOptions {
         retrieveRequest?: (this: CrudRequest, url: string, data?: any, options?: RequestOptions) => Promise<any>,
         updateRequest?: (this: CrudRequest, url: string, data?: any, options?: RequestOptions) => Promise<any>,
         deleteRequest?: (this: CrudRequest, url: string, data?: any, options?: RequestOptions) => Promise<any>,
-        notify?: (this: CrudRequest, data: any) => Promise<any>,
         dialog?: (this: CrudRequest, component: any, options?: any) => Promise<any>,
-        prompt?: (this: CrudRequest, options?: any) => Promise<any>,
-        confirm?: (this: CrudRequest, options?: any) => Promise<any>,
-        alert?: (this: CrudRequest, options?: any) => Promise<any>,
+        notify?: (this: CrudRequest, options: NotifyOptions) => Promise<any>,
+        alert?: (this: CrudRequest, options?: AlertOptions) => Promise<any>,
+        prompt?: (this: CrudRequest, options?: PromptOptions) => Promise<any>,
+        confirm?: (this: CrudRequest, options?: ConfirmOptions) => Promise<any>,
         sendRequest?: (this: CrudRequest, options?: RequestOptions) => Promise<any>,
-        chooseFile?: (this: CrudRequest, options?: any) => Promise<any>
+        chooseFile?: (this: CrudRequest, options?: ChooseFileOptions) => Promise<any>
     },
     prefix?: string,
     suffix?: string,

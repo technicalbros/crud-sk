@@ -1,4 +1,9 @@
 import RequestOptions from "./RequestOptions";
+import NotifyOptions from "./NotifyOptions";
+import AlertOptions from "./AlertOptions";
+import ConfirmOptions from "./ConfirmOptions";
+import ChooseFileOptions from "./ChooseFileOptions";
+import PromptOptions from "./PromptOptions";
 
 export default class CrudRequest {
 
@@ -54,23 +59,23 @@ export default class CrudRequest {
         return this;
     }
 
-    send(options: RequestOptions): Promise<any> {
+    async send(options: RequestOptions): Promise<any> {
         return this.call('sendRequest', [options]);
     }
 
-    create(url: string, data?: any, options?: RequestOptions): Promise<any> {
+    async create(url: string, data?: any, options?: RequestOptions): Promise<any> {
         return this.call("createRequest", [url, data, options]);
     }
 
-    retrieve(url: string, data?: any, options?: RequestOptions): Promise<any> {
+    async retrieve(url: string, data?: any, options?: RequestOptions): Promise<any> {
         return this.call("retrieveRequest", [url, data, options]);
     }
 
-    update(url: string, data?: any, options?: RequestOptions): Promise<any> {
+    async update(url: string, data?: any, options?: RequestOptions): Promise<any> {
         return this.call("updateRequest", [url, data, options]);
     }
 
-    delete(url: string, data?: any, options?: RequestOptions): Promise<any> {
+    async delete(url: string, data?: any, options?: RequestOptions): Promise<any> {
         return this.call("deleteRequest", [url, data, options]);
     }
 
@@ -79,26 +84,26 @@ export default class CrudRequest {
     }
 
     reload(): void {
-        this.call("confirm");
+        this.call("reload");
     }
 
-    alert(options?: any): Promise<any> {
+    async alert(options?: AlertOptions): Promise<any> {
         return this.call("alert", [options]);
     }
 
-    confirm(options?: any): Promise<boolean> {
+    async confirm(options?: ConfirmOptions): Promise<boolean> {
         return this.call("confirm", [options]);
     }
 
-    prompt(options?: any): Promise<any> {
+    async prompt(options?: PromptOptions): Promise<any> {
         return this.call("prompt", [options]);
     }
 
-    dialog(name: string, options: any): Promise<any> {
+    async dialog(options: any): Promise<any> {
         return this.call("dialog", [options]);
     }
 
-    notify(options?: any): Promise<any> {
+    async notify(options?: NotifyOptions): Promise<any> {
         return this.call("notify", [options]);
     }
 
@@ -106,7 +111,7 @@ export default class CrudRequest {
         return this.call("loading", [value]);
     }
 
-    async chooseFile(options: any): Promise<any> {
+    async chooseFile(options: ChooseFileOptions): Promise<any> {
         return this.call("chooseFile", [options]);
     }
 }
