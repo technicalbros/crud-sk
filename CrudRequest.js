@@ -55,10 +55,14 @@ var CrudRequest = /** @class */ (function () {
                     var type = (_a === void 0 ? {} : _a).type;
                     return type === 'success';
                 },
-                createRequest: function (url, data, options) { return _this.send(__assign({ method: "post", prefix: "create/" }, options, { url: url, data: data })); },
-                updateRequest: function (url, data, options) { return _this.send(__assign({ method: "post", prefix: "update/" }, options, { url: url, data: data })); },
-                deleteRequest: function (url, data, options) { return _this.send(__assign({ method: "post", prefix: "delete/" }, options, { url: url, data: data })); },
-                retrieveRequest: function (url, data, options) { return _this.send(__assign({ method: "get", prefix: "retrieve/", checkDataType: false, notify: false }, options, { url: url, data: data })); }
+                createRequest: function (url, data, options) { return _this.send(__assign({ method: "post", prefix: "create/" }, options, { url: url,
+                    data: data })); },
+                updateRequest: function (url, data, options) { return _this.send(__assign({ method: "post", prefix: "update/" }, options, { url: url,
+                    data: data })); },
+                deleteRequest: function (url, data, options) { return _this.send(__assign({ method: "post", prefix: "delete/" }, options, { url: url,
+                    data: data })); },
+                retrieveRequest: function (url, data, options) { return _this.send(__assign({ method: "get", prefix: "retrieve/", checkDataType: false, notify: false }, options, { url: url,
+                    data: data })); }
             }
         };
     }

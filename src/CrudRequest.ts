@@ -11,22 +11,22 @@ export default class CrudRequest {
                 method: "post",
                 prefix: "create/",
                 ...options,
-                url: url,
-                data: data,
+                url,
+                data,
             }),
             updateRequest: (url, data, options) => this.send({
                 method: "post",
                 prefix: "update/",
                 ...options,
-                url: url,
-                data: data,
+                url,
+                data,
             }),
             deleteRequest: (url, data, options) => this.send({
                 method: "post",
                 prefix: "delete/",
                 ...options,
-                url: url,
-                data: data,
+                url,
+                data,
             }),
             retrieveRequest: (url, data, options) => this.send({
                 method: "get",
@@ -34,8 +34,8 @@ export default class CrudRequest {
                 checkDataType: false,
                 notify: false,
                 ...options,
-                url: url,
-                data: data,
+                url,
+                data,
             })
         }
     }
