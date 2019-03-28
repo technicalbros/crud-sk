@@ -1,4 +1,4 @@
 export default interface ChooseFileOptions {
-    accept: any[] | any
-    multiple: boolean
+    accept?: any[] | any
+    multiple?: boolean
 }

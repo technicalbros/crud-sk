@@ -19,7 +19,7 @@ export default interface RequestOptions {
         updateRequest?: (this: CrudRequest, url: string, data?: any, options?: RequestOptions) => Promise<any>,
         deleteRequest?: (this: CrudRequest, url: string, data?: any, options?: RequestOptions) => Promise<any>,
         dialog?: (this: CrudRequest, component: any, options?: any) => Promise<any>,
-        notify?: (this: CrudRequest, options: NotifyOptions) => Promise<any>,
+        notify?: (this: CrudRequest, options?: NotifyOptions) => Promise<any>,
         alert?: (this: CrudRequest, options?: AlertOptions) => Promise<any>,
         prompt?: (this: CrudRequest, options?: PromptOptions) => Promise<any>,
         confirm?: (this: CrudRequest, options?: ConfirmOptions) => Promise<any>,

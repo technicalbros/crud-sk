@@ -111,7 +111,7 @@ export default class CrudRequest {
         return this.call("loading", [value]);
     }
 
-    async chooseFile(options: ChooseFileOptions): Promise<any> {
+    async chooseFile(options?: ChooseFileOptions): Promise<any> {
         return this.call("chooseFile", [options]);
     }
 }

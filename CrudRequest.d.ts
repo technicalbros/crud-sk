@@ -21,5 +21,5 @@ export default class CrudRequest {
     dialog(options: any): Promise<any>;
     notify(options?: NotifyOptions): Promise<any>;
     toggleLoading(value: boolean): void;
-    chooseFile(options: ChooseFileOptions): Promise<any>;
+    chooseFile(options?: ChooseFileOptions): Promise<any>;
 }
